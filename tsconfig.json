@@ -3,7 +3,7 @@
       "rootDir": "./src",                           /* Specify the root directory of your source files */
       "outDir": "./dist",                        /* Specify the output directory for transpiled files */
       "module": "CommonJS",                         /* Specify module code generation: 'CommonJS' for Node.js */
-      "target": "ESNext",                           /* Specify ECMAScript target version */
+      "target": "ES5",                           /* Specify ECMAScript target version */
       "esModuleInterop": true,                      /* Enables emit interoperability between CommonJS and ES Modules */
       "moduleResolution": "Node",                   /* Specify module resolution strategy */
       "sourceMap": false,                           /* Disable source maps (optional, for production build) */
@@ -12,10 +12,10 @@
       "resolveJsonModule": true                     /* Enable importing JSON files directly */
     },
     "include": [
-      "src/**/*.ts"                                /* Include TypeScript files in 'src' directory and subdirectories */
+      "./**/*"
     ],
     "exclude": [
       "node_modules"                               /* Exclude 'node_modules' directory */
     ]
   }
-  
+   
