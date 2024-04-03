@@ -20,17 +20,13 @@ const env: DbConfig = {
   };
 
 const sequelize = new Sequelize(
-env.DB_DATABASE, // database
-env.DB_USERNAME, // username
-env.DB_PASSWORD, // password
 {
-  host: env.DB_HOST,
-  port: env.DB_PORT,
-  dialect: env.DB_DIALECT,
-  pool: {
-    max: 10,
-    min: 1
-  },
+  dialect: "mysql",
+  host: process.env.DB_HOST,
+  username: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  port: Number(process.env.DB_PORT),
   logging: console.log,
 });
 
