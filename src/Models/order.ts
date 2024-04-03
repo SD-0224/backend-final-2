@@ -1,14 +1,14 @@
 import { sequelize } from "../config/dbConfig";
 import { DataTypes, Model } from "sequelize";
 
-interface OrderAttributes extends Model {
+interface orderAttributes extends Model {
   orderID: number;
   userID: number;
   addressID: number;
   isPaid: boolean;
 }
 
-const OrderModel = sequelize.define<OrderAttributes>('orderDetails', {
+const order = sequelize.define<orderAttributes>('orderDetails', {
   orderID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -31,4 +31,4 @@ const OrderModel = sequelize.define<OrderAttributes>('orderDetails', {
   tableName: 'orderDetails'
 });
 
-export { OrderModel };
+export { order, orderAttributes };

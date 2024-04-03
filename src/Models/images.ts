@@ -8,7 +8,7 @@ interface ImageAttributes extends Model {
   imageIndex: number; 
 }
 
-const ImageModel = sequelize.define<ImageAttributes>('images', {
+const images = sequelize.define<ImageAttributes>('images', {
   imageID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -31,4 +31,4 @@ const ImageModel = sequelize.define<ImageAttributes>('images', {
   tableName: 'images'
 });
 
-export { ImageModel };
+export { images, ImageAttributes };

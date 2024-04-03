@@ -1,14 +1,14 @@
 import { sequelize } from "../config/dbConfig"
 import { DataTypes, Model } from "sequelize"
 
-// Interface representing the attributes of the Brand model
-interface BrandAttributes extends Model{
+// Interface representing the attributes of the brand model
+interface brandAttributes extends Model{
     brandID: number;
     name: string;
   }
 
   
-const BrandModel = sequelize.define<BrandAttributes>('brand', {
+const brand = sequelize.define<brandAttributes>('brand', {
  brandID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -24,4 +24,4 @@ const BrandModel = sequelize.define<BrandAttributes>('brand', {
 }
 )
 
-export { BrandModel }
+export { brand, brandAttributes }

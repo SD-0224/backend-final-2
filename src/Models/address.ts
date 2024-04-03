@@ -1,7 +1,7 @@
 import { sequelize } from "../config/dbConfig";
 import { DataTypes, Model } from "sequelize";
 
-interface AddressAttribute extends Model {
+interface addressAttribute extends Model {
   addressID: number;
   userID: number;
   street: string;
@@ -10,7 +10,7 @@ interface AddressAttribute extends Model {
   postalCode: string; // Changed data type to string
 }
 
-const AddressModel = sequelize.define<AddressAttribute>('addresses', {
+const address = sequelize.define<addressAttribute>('addresses', {
   addressID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -41,4 +41,4 @@ const AddressModel = sequelize.define<AddressAttribute>('addresses', {
   tableName: 'addresses'
 });
 
-export { AddressModel };
+export { address, addressAttribute };

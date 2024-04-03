@@ -9,7 +9,7 @@ interface PaymentAttributes extends Model {
   paymentMethod: string;
 }
 
-const PaymentModel = sequelize.define<PaymentAttributes>('paymentDetails', {
+const payment = sequelize.define<PaymentAttributes>('paymentDetails', {
   paymentID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -37,4 +37,4 @@ const PaymentModel = sequelize.define<PaymentAttributes>('paymentDetails', {
   tableName: 'paymentDetails'
 });
 
-export { PaymentModel };
+export { payment, PaymentAttributes };

@@ -7,7 +7,7 @@ interface WishlistAttributes extends Model {
   productID: number;
 }
 
-const WishlistModel = sequelize.define<WishlistAttributes>('wishList', {
+const wishList = sequelize.define<WishlistAttributes>('wishList', {
   wishlistID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -26,4 +26,4 @@ const WishlistModel = sequelize.define<WishlistAttributes>('wishList', {
   tableName: 'wishList'
 });
 
-export { WishlistModel };
+export { wishList, WishlistAttributes };

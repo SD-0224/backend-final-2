@@ -1,61 +1,62 @@
-// // Import Sequelize and models
-// import { CartModel } from "./cart"
-// import { WishlistModel } from "./wishlist"
-// import { ReviewModel } from "./review"
-// import { OrderModel } from "./order"
-// import { AddressModel } from "./address"
-// import { OrderItemModel } from "./orderitem"
-// import { ProductModel } from "./product"
-// import { ImageModel } from "./images"
-// import { BrandModel } from "./brand"
-// import { CategoryModel } from "./category"
-// import { UserModel} from "./user"
-// import { PaymentModel} from "./payment"
+// Import Sequelize and models
+import { cart } from "./cart"
+import { wishList } from "./wishlist"
+import { review } from "./review"
+import { order } from "./order"
+import { address } from "./address"
+import { orderItem } from "./orderitem"
+import { product } from "./product"
+import { images } from "./images"
+import { brand } from "./brand"
+import { category } from "./category"
+import { user} from "./user"
+import { payment} from "./payment"
 
-// // Define associations
+// Define associations
 
-// //Category and Brand
-// CategoryModel.hasMany(ProductModel, { foreignKey: 'categoryID' })
-// BrandModel.hasMany(ProductModel, { foreignKey: 'brandID' })
+//category and brand
+category.hasMany(product, { foreignKey: 'categoryID' })
+brand.hasMany(product, { foreignKey: 'brandID' })
 
-// ProductModel.belongsTo(BrandModel, { foreignKey: 'brandID' });
-// ProductModel.belongsTo(CategoryModel, { foreignKey: 'categoryID' });
-// //Reviews 
-// ProductModel.hasMany(ReviewModel, { foreignKey: 'productID' })
-// ReviewModel.belongsTo(ProductModel, { foreignKey: 'productID' })
-// //Order
-// OrderModel.hasMany(OrderItemModel, { foreignKey: 'orderID' });
-// OrderItemModel.belongsTo(OrderModel, { foreignKey: 'orderID' });
+product.belongsTo(brand, { foreignKey: 'brandID' });
+product.belongsTo(category, { foreignKey: 'categoryID' });
+//Reviews 
+product.hasMany(review, { foreignKey: 'productID' })
+review.belongsTo(product, { foreignKey: 'productID' })
+//Order
+order.hasMany(orderItem, { foreignKey: 'orderID' });
+orderItem.belongsTo(order, { foreignKey: 'orderID' });
 
-// OrderItemModel.belongsTo(ProductModel, { foreignKey: 'productID' });
-// //Address
-// UserModel.hasMany(AddressModel, { foreignKey: 'userID' });
-// AddressModel.belongsTo(UserModel, { foreignKey: 'userID' });
-// //Cart
-// UserModel.hasMany(CartModel, { foreignKey: 'userID' });
-// CartModel.belongsTo(UserModel, { foreignKey: 'userID' });
-// CartModel.belongsTo(ProductModel, { foreignKey: 'productID' })
-// ProductModel.hasMany(CartModel, { foreignKey: 'productID' })
-// //Wishlist
-// UserModel.hasMany(WishlistModel, { foreignKey: 'userID' });
-// WishlistModel.belongsTo(UserModel, { foreignKey: 'userID' });
-// ProductModel.hasMany(WishlistModel, { foreignKey: 'productID' });
-// WishlistModel.belongsTo(ProductModel, { foreignKey: 'productID' });
+orderItem.belongsTo(product, { foreignKey: 'productID' });
+//address
+user.hasMany(address, { foreignKey: 'userID' });
+address.belongsTo(user, { foreignKey: 'userID' });
+//cart
+user.hasMany(cart, { foreignKey: 'userID' });
+cart.belongsTo(user, { foreignKey: 'userID' });
+cart.belongsTo(product, { foreignKey: 'productID' })
+product.hasMany(cart, { foreignKey: 'productID' })
+//Wishlist
+user.hasMany(wishList, { foreignKey: 'userID' });
+wishList.belongsTo(user, { foreignKey: 'userID' });
+product.hasMany(wishList, { foreignKey: 'productID' });
+wishList.belongsTo(product, { foreignKey: 'productID' });
 
-// //Payment
-// UserModel.hasMany(PaymentModel, { foreignKey: 'userID' });
-// PaymentModel.belongsTo(UserModel, { foreignKey: 'userID' });
+//Payment
+user.hasMany(payment, { foreignKey: 'userID' });
+payment.belongsTo(user, { foreignKey: 'userID' });
 
-// PaymentModel.hasMany(OrderModel, { foreignKey: 'paymentID' });
-// OrderModel.belongsTo(PaymentModel, { foreignKey: 'paymentID' });
-// //Image
-// ProductModel.hasMany(ImageModel, { foreignKey: 'productID' });
-// ImageModel.belongsTo(ProductModel, { foreignKey: 'productID' });
+payment.hasMany(order, { foreignKey: 'paymentID' });
+order.belongsTo(payment, { foreignKey: 'paymentID' });
+//Image
+product.hasMany(images, { foreignKey: 'productID' });
+images.belongsTo(product, { foreignKey: 'productID' });
 
-// //Address
-// UserModel.hasMany(AddressModel, { foreignKey: 'userID' })
-// AddressModel.belongsTo(UserModel, { foreignKey: 'userID' })
-// OrderModel.belongsTo(AddressModel, { foreignKey: 'addressID' });
-// AddressModel.hasMany(OrderModel, { foreignKey: 'addressID' });
-// // Export models
-// export { UserModel, AddressModel, CartModel, WishlistModel, PaymentModel,ProductModel, OrderModel, OrderItemModel, ReviewModel, ImageModel,  BrandModel, CategoryModel};
+//address
+user.hasMany(address, { foreignKey: 'userID' })
+address.belongsTo(user, { foreignKey: 'userID' })
+order.belongsTo(address, { foreignKey: 'addressID' });
+address.hasMany(order, { foreignKey: 'addressID' });
+
+
+export { user, address, cart, wishList, payment,product, order, orderItem, review, images,  brand, category};

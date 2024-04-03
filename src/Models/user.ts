@@ -1,7 +1,7 @@
 import { sequelize } from "../config/dbConfig";
 import { DataTypes, Model } from "sequelize";
 
-interface UserInstance extends Model {
+interface UserAttributes extends Model {
   userID: number;
   firstName: string;
   lastName: string;
@@ -12,7 +12,7 @@ interface UserInstance extends Model {
   dateOfBirth?: Date | null; // Make it optional
 }
 
-const UserModel = sequelize.define<UserInstance>('users', {
+const user = sequelize.define<UserAttributes>('users', {
   userID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -51,5 +51,6 @@ const UserModel = sequelize.define<UserInstance>('users', {
 });
 
 export {
-  UserModel
+  user,
+  UserAttributes
 };

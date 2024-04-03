@@ -1,7 +1,6 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-import { ProductModel } from '../models/product';
-
+import * as db from '../models/index'
 dotenv.config();
 interface DbConfig {
     DB_HOST: string;
@@ -33,14 +32,13 @@ env.DB_PASSWORD, // password
     min: 1
   },
   logging: console.log,
-
 });
 
-async function syncModels() {
+async function syncModels():Promise<void> {
     try {
       await sequelize.authenticate()
       console.log('Connection has been established successfully.')
-      await ProductModel.sync();
+      await sequelize.sync({force:true});
   
     } catch (error) {
       console.error('Unable to connect to the database:', error)

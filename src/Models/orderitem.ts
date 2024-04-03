@@ -8,7 +8,7 @@ interface OrderAttributes extends Model {
   price: number; 
 }
 
-const OrderItemModel = sequelize.define<OrderAttributes>('orderItems', {
+const orderItem = sequelize.define<OrderAttributes>('orderItems', {
   orderItemID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -27,7 +27,7 @@ const OrderItemModel = sequelize.define<OrderAttributes>('orderItems', {
   }
 }, {
   timestamps: false,
-  tableName: 'orderitems'
+  tableName: 'orderItems'
 });
 
-export { OrderItemModel };
+export { orderItem, OrderAttributes };

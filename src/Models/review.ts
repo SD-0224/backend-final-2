@@ -8,7 +8,7 @@ interface ReviewAttributes extends Model {
   productID: number;
 }
 
-const ReviewModel = sequelize.define<ReviewAttributes>('reviews', {
+const review = sequelize.define<ReviewAttributes>('reviews', {
   reviewID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -35,4 +35,4 @@ const ReviewModel = sequelize.define<ReviewAttributes>('reviews', {
   tableName: 'reviews'
 });
 
-export { ReviewModel };
+export { review, ReviewAttributes };

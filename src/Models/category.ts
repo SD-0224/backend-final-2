@@ -1,11 +1,11 @@
 import { sequelize } from "../config/dbConfig"
 import { DataTypes, Model } from "sequelize"
 
-interface CategoryAttributes extends Model {
+interface categoryAttributes extends Model {
   categoryID: number,
   name: string,
 }
-const CategoryModel = sequelize.define<CategoryAttributes>('category', {
+const category = sequelize.define<categoryAttributes>('category', {
   categoryID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -20,4 +20,4 @@ const CategoryModel = sequelize.define<CategoryAttributes>('category', {
   tableName: 'category'
 })
 
-export { CategoryModel }
+export { category, categoryAttributes }

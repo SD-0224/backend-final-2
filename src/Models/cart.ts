@@ -1,6 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/dbConfig";
-interface CartModelAttributes extends Model {
+interface cartAttributes extends Model {
   cartID: number;
   userID: number;
   productID: number;
@@ -8,7 +8,7 @@ interface CartModelAttributes extends Model {
   isOrdered: boolean;
 }
 
-const CartModel = sequelize.define<CartModelAttributes>('carts', {
+const cart = sequelize.define<cartAttributes>('carts', {
   cartID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -36,4 +36,4 @@ const CartModel = sequelize.define<CartModelAttributes>('carts', {
   tableName: 'carts'
 });
 
-export { CartModel };
+export { cart, cartAttributes };

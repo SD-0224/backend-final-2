@@ -14,7 +14,7 @@ interface productAttributes extends Model {
     arrival: string,
     brand: number,
 }
-const ProductModel = sequelize.define<productAttributes>('products', {
+const product = sequelize.define<productAttributes>('products', {
   productID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -61,4 +61,4 @@ const ProductModel = sequelize.define<productAttributes>('products', {
   tableName: 'products'
 })
 
-export { ProductModel }
+export { product, productAttributes }
