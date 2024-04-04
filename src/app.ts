@@ -14,6 +14,7 @@ import { order } from './models/order';
 import { cart } from './models/cart';
 import { orderItem } from './models/orderitem';
 import * as db from './models/index';
+import { seedTables } from './Utils/generateFake';
 
 
 const app = express();
@@ -39,3 +40,6 @@ syncModels()
   .catch((error) => {
     console.error('Error syncing database:', error);
   });
+//DO NOT UNCOMMENT UNLESS WE LOSE DATA!!!!!
+//DONT UNCOMMENT I REPEAT!
+// seedTables();

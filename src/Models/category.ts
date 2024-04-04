@@ -2,8 +2,10 @@ import { sequelize } from "../config/dbConfig"
 import { DataTypes, Model } from "sequelize"
 
 interface categoryAttributes extends Model {
-  categoryID: number,
-  name: string,
+  categoryID: number;
+  name: string;
+  imagePath: string;
+
 }
 const category = sequelize.define<categoryAttributes>('category', {
   categoryID: {
@@ -14,6 +16,11 @@ const category = sequelize.define<categoryAttributes>('category', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+  
+  imagePath:
+  {
+    type: DataTypes.STRING,
   },
 }, {
   timestamps: false,
