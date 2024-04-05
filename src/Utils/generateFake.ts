@@ -4,7 +4,7 @@ import { brandsData } from "./brandFake";
 import { imagesData } from "./imageFake";
 import { reviewData } from "./reviewFake";
 import { productsData } from "./productFaker";
-import * as db from "../models/index";
+import * as db from "../Models/index";
 async function seedTables(
 ) {
   try {
