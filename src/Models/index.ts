@@ -64,4 +64,4 @@ order.belongsTo(address, { foreignKey: 'addressID' });
 address.hasMany(order, { foreignKey: 'addressID' });
 
 
-export { user, address, cart, wishList, payment,product, order, orderItem, review, images,  brand, category};
+export { user, address, cart,cartItem, wishList, payment,product, order, orderItem, review, images,  brand, category};
