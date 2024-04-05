@@ -25,5 +25,5 @@ const wishList = sequelize.define<WishlistAttributes>('wishList', {
   timestamps: false,
   tableName: 'wishList'
 });
-
+//test
 export { wishList, WishlistAttributes };
