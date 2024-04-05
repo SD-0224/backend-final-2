@@ -1,20 +1,19 @@
 import express from 'express';
 import { sequelize, syncModels } from './config/dbConfig';
 import bodyParser from 'body-parser'
-import { product } from './models/product';
-import { brand } from './models/brand';
-import {address} from './models/address';
-import { user } from './models/user';
-import { wishList } from './models/wishlist';
-import { review } from './models/review';
-import { category } from './models/category';
-import { images } from './models/images';
-import { payment } from './models/payment';
-import { order } from './models/order';
-import { cart } from './models/cart';
-import { orderItem } from './models/orderitem';
-import * as db from './models/index';
-import { seedTables } from './Utils/generateFake';
+import { product } from './Models/product';
+import { brand } from './Models/brand';
+import {address} from './Models/address';
+import { user } from './Models/user';
+import { wishList } from './Models/wishlist';
+import { review } from './Models/review';
+import { category } from './Models/category';
+import { images } from './Models/images';
+import { payment } from './Models/payment';
+import { order } from './Models/order';
+import { cart } from './Models/cart';
+import { orderItem } from './Models/orderitem';
+import * as db from './Models/index';
 
 
 const app = express();
