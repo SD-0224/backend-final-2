@@ -1,6 +1,6 @@
 import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
-import * as db from '../models/index'
+import * as db from '../Models/index'
 dotenv.config();
 interface DbConfig {
     DB_HOST: string;

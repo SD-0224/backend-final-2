@@ -11,6 +11,7 @@ import { brand } from "./brand"
 import { category } from "./category"
 import { user} from "./user"
 import { payment} from "./payment"
+import { cartItem } from "./cartItem"
 
 // Define associations
 
@@ -31,11 +32,15 @@ orderItem.belongsTo(product, { foreignKey: 'productID' });
 //address
 user.hasMany(address, { foreignKey: 'userID' });
 address.belongsTo(user, { foreignKey: 'userID' });
+//cartItem
+cartItem.hasMany(cart, { foreignKey: 'cartID' });
+cart.belongsTo(cartItem, { foreignKey: 'cartID' });
+cart.belongsTo(product, { foreignKey: 'productID' })
+product.hasMany(cart, { foreignKey: 'productID' })
 //cart
 user.hasMany(cart, { foreignKey: 'userID' });
 cart.belongsTo(user, { foreignKey: 'userID' });
-cart.belongsTo(product, { foreignKey: 'productID' })
-product.hasMany(cart, { foreignKey: 'productID' })
+
 //Wishlist
 user.hasMany(wishList, { foreignKey: 'userID' });
 wishList.belongsTo(user, { foreignKey: 'userID' });

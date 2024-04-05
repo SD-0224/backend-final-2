@@ -9,7 +9,7 @@ interface cartAttributes extends Model {
 }
 
 const cart = sequelize.define<cartAttributes>('carts', {
-  cartID: {
+  cartItemID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -17,23 +17,10 @@ const cart = sequelize.define<cartAttributes>('carts', {
   userID: {
     type: DataTypes.INTEGER,
     allowNull: false,
-  },
-  productID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  productQuantity: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  isOrdered: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false
+  }},{
+    timestamps: false,
+    tableName: 'carts'
   }
-}, {
-  timestamps: false,
-  tableName: 'carts'
-});
-
-export { cart, cartAttributes };
+  );
+  
+  export { cart, cartAttributes };
