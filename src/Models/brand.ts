@@ -5,6 +5,7 @@ import { DataTypes, Model } from "sequelize"
 interface brandAttributes extends Model{
     brandID: number;
     name: string;
+    imagePath: string;
   }
 
   
@@ -17,6 +18,11 @@ const brand = sequelize.define<brandAttributes>('brand', {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
+  },
+
+  imagePath:
+  {
+    type: DataTypes.STRING,
   },
 }, {
   timestamps: false,

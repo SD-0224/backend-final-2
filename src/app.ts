@@ -39,3 +39,6 @@ syncModels()
   .catch((error) => {
     console.error('Error syncing database:', error);
   });
+//DO NOT UNCOMMENT UNLESS WE LOSE DATA!!!!!
+//DONT UNCOMMENT I REPEAT!
+// seedTables();
