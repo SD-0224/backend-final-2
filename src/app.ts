@@ -2,7 +2,7 @@ import express from 'express';
 import { syncModels } from './config/dbConfig';
 import bodyParser from 'body-parser'
 import * as db from './Models/index';
-
+import { seedTables } from './Utils/generateFake';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,4 +29,4 @@ syncModels()
   });
 //DO NOT UNCOMMENT UNLESS WE LOSE DATA!!!!!
 //DONT UNCOMMENT I REPEAT!
-// seedTables();
+seedTables();
