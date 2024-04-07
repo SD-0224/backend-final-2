@@ -3,6 +3,7 @@ import { sequelize } from "../config/dbConfig";
 import { Request, Response } from "express";
 
 import productServices from "../Services/productServices";
+import { validationResult } from "express-validator";
 
 export const getProductsByCategory = async (
   req: Request,
@@ -16,8 +17,11 @@ export const getProductsByCategory = async (
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
 
-    // Log page and limit for debugging purposes
-    console.log(page, limit);
+    // Validate the inputs
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
     // Find category by ID in the database
     const category = await db.category.findByPk(catID);
@@ -68,6 +72,11 @@ export const getProductsByBrand = async (
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
+    // Validate the inputs
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
     // Find brand by ID in the database
     const brand = await db.brand.findByPk(branID);
