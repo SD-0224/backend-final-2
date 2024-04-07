@@ -6,8 +6,8 @@ import { validateGetByCategoryParams, validateGetByBrandsParams } from "../Valid
 
 router.get('/brand/:brand', validateGetByBrandsParams, productController.getProductsByBrand);
 router.get('/category/:category',validateGetByCategoryParams, productController.getProductsByCategory);
-router.get('/new',);
-router.get('/trendy',);
+router.get('/new', productController.getProductsByArrival);
+router.get('/trendy', productController.getProductsByTrendy);
 
 export default router;
 
