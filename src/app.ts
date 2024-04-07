@@ -1,21 +1,9 @@
 import express from 'express';
-import { sequelize, syncModels } from './config/dbConfig';
+import { syncModels } from './config/dbConfig';
 import bodyParser from 'body-parser'
-import { product } from './Models/product';
-import { brand } from './Models/brand';
-import {address} from './Models/address';
-import { user } from './Models/user';
-import { wishList } from './Models/wishlist';
-import { review } from './Models/review';
-import { category } from './Models/category';
-import { images } from './Models/images';
-import { payment } from './Models/payment';
-import { order } from './Models/order';
-import { cart } from './Models/cart';
-import { orderItem } from './Models/orderitem';
 import * as db from './Models/index';
-
-
+import { seedTables } from './Utils/generateFake';
+import productRouter from "./Routers/productRouter"
 const app = express();
 const PORT = process.env.PORT || 3000;
 const test = db.address;
@@ -23,7 +11,7 @@ app.use(express.json());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 // Define routes or other middleware here
-// app.use('/products', productRoutes)
+app.use('/products', productRouter)
 // app.use('/cart', cartRoutes )
 // app.use('/wishList', wishListRoutes)
 // app.use('/profile', profileRoutes )
@@ -41,4 +29,4 @@ syncModels()
   });
 //DO NOT UNCOMMENT UNLESS WE LOSE DATA!!!!!
 //DONT UNCOMMENT I REPEAT!
-// seedTables();
+seedTables();
