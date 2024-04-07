@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 
 import productServices from "../Services/productServices";
 import { validationResult } from "express-validator";
+import { Op } from "sequelize";
 
 export const getProductsByCategory = async (
   req: Request,
@@ -120,8 +121,33 @@ export const getProductsByArrival = async (
   res: Response
 ): Promise<any> => {
   try {
-    // Retrieve products based on options, page, and limit
-    // Return products and count in the response
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const currentDate = new Date();
+    const minimum = currentDate.setMonth(currentDate.getMonth() - 3);
+    const options = {
+      where: {
+        arrival: {
+          [Op.gt]: minimum,
+        },
+      },
+
+    
+    };
+     // Count total number of products for the brand
+     const count = await productServices.countProducts(options);
+      // Retrieve products based on options, page, and limit
+      const products = await productServices.getProducts(
+        options,
+        Number(page),
+        Number(limit)
+      );
+
+      // Return products and count in the response
+      return res.status(200).json({
+        products,
+        count,
+      });
   } catch (error) {
     // Handle errors and send appropriate error response
 
