@@ -3,7 +3,7 @@ import { syncModels } from './config/dbConfig';
 import bodyParser from 'body-parser'
 import * as db from './Models/index';
 import { seedTables } from './Utils/generateFake';
-
+import productRouter from "./Routers/productRouter"
 const app = express();
 const PORT = process.env.PORT || 3000;
 const test = db.address;
@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 // Define routes or other middleware here
-// app.use('/products', productRoutes)
+app.use('/products', productRouter)
 // app.use('/cart', cartRoutes )
 // app.use('/wishList', wishListRoutes)
 // app.use('/profile', profileRoutes )
