@@ -131,23 +131,21 @@ export const getProductsByArrival = async (
           [Op.gt]: minimum,
         },
       },
-
-    
     };
-     // Count total number of products for the brand
-     const count = await productServices.countProducts(options);
-      // Retrieve products based on options, page, and limit
-      const products = await productServices.getProducts(
-        options,
-        Number(page),
-        Number(limit)
-      );
+    // Count total number of products for the brand
+    const count = await productServices.countProducts(options);
+    // Retrieve products based on options, page, and limit
+    const products = await productServices.getProducts(
+      options,
+      Number(page),
+      Number(limit)
+    );
 
-      // Return products and count in the response
-      return res.status(200).json({
-        products,
-        count,
-      });
+    // Return products and count in the response
+    return res.status(200).json({
+      products,
+      count,
+    });
   } catch (error) {
     // Handle errors and send appropriate error response
 
@@ -161,6 +159,31 @@ export const getProductsByTrendy = async (
   res: Response
 ): Promise<any> => {
   try {
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const options = {
+      where: {
+        productID: {
+          [Op.in]: sequelize.literal(
+            `(SELECT productID FROM reviews GROUP BY productID HAVING AVG(rating) >= 4.5)`
+          ),
+        },
+      },
+      order: [["title", "ASC"]], // Sorting products by title in ascending order
+
+      having: sequelize.literal(`avgReview >= 4.5`),
+    };
+    const count = await productServices.countProducts(options);
+
+    const products = await productServices.getProducts(
+      options,
+      Number(page),
+      Number(limit)
+    );
+    return res.status(200).json({
+      products,
+      count,
+    });
   } catch (error) {
     console.log("Error getting products by trendy", error);
     res.status(error.status).json({ error: error.message });
