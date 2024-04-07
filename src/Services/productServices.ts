@@ -57,20 +57,25 @@ const getProducts = async (
   }
 };
 
-const countProducts = async (options:QueryOptions) =>
-    {
-        console.log("Fetching products from the database...");
-        try {
-        const products = await db.product.count({
+/**
+ * Count the number of products based on specified query options.
+ * @param options Query options for filtering products.
+ * @returns A promise that resolves to the count of products.
+ */
+const countProducts = async (options: QueryOptions): Promise<number> => {
+    console.log("Fetching product count from the database...");
+    try {
+        // Count the number of products matching the provided options
+        const productCount = await db.product.count({
             where: options.where,
-            
         });
-        return products;
-      } catch (err) {
-        console.log("error, fetching database for products", err);
-      }
-  
+        return productCount;
+    } catch (error) {
+        // Log and handle any errors that occur during the database operation
+        console.error("Error fetching product count:", error);
+        throw new Error("Failed to fetch product count");
     }
+};
 const productServices = {
     getProducts,
     countProducts,
