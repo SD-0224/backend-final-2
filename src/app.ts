@@ -5,6 +5,8 @@ import * as db from './Models/index';
 import { seedTables } from './Utils/generateFake';
 import productRouter from "./Routers/productRouter"
 import brandRouter from "./Routers/brandRouter"
+import categoryRouter from "./Routers/categoryRouter"
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const test = db.address;
@@ -14,6 +16,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // Define routes or other middleware here
 app.use('/products', productRouter)
 app.use('/brands', brandRouter)
+app.use('/categories', categoryRouter)
+
 // app.use('/cart', cartRoutes )
 // app.use('/wishList', wishListRoutes)
 // app.use('/profile', profileRoutes )

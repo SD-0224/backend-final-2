@@ -3,7 +3,7 @@ import * as db from "../Models/index";
 import { sequelize } from "../config/dbConfig";
 
 interface QueryOptions {
-  where: any;
+  where?: any;
   order?: any;
   having?: any;
 }
@@ -28,8 +28,9 @@ const getProducts = async (
         "title",
         "subTitle",
         "price",
-        "categoryID",
         "discount",
+        [sequelize.literal('(SELECT name FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brandName'],
+
         [sequelize.fn('COALESCE', sequelize.fn('AVG', sequelize.col('reviews.rating')), 0), 'avgReview'],
         [sequelize.fn('COUNT', sequelize.col('reviews.rating')), 'reviewCount'],
         [

@@ -1,10 +1,12 @@
 import * as db from "../Models/index";
 import { sequelize } from "../config/dbConfig";
 import { Request, Response } from "express";
+import FuzzySearch from 'fuzzy-search'
 
 import productServices from "../Services/productServices";
 import { validationResult } from "express-validator";
 import { Op } from "sequelize";
+import brandServices from "../Services/brandServices";
 
 export const getProductsByCategory = async (
   req: Request,
@@ -189,3 +191,77 @@ export const getProductsByTrendy = async (
     res.status(error.status).json({ error: error.message });
   }
 };
+
+
+
+export const getProductsHandpicked = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const catID = req.params.category;
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const options = {
+      where: {
+        categoryID: catID,
+        productID: {
+          [Op.in]: sequelize.literal(
+            `(SELECT productID FROM reviews GROUP BY productID HAVING AVG(rating) >= 4.5 and price <100)`
+          ),
+        },
+      },
+      order: [["title", "ASC"]], // Sorting products by title in ascending order
+
+      having: sequelize.literal(`avgReview >= 4.5 and price <100`),
+    };
+    const count = await productServices.countProducts(options);
+
+    const products = await productServices.getProducts(
+      options,
+      Number(page),
+      Number(limit)
+    );
+    return res.status(200).json({
+      products,
+      count,
+    });
+  } catch (error) {
+    console.log("Error getting products by handpicked", error);
+    res.status(error.status).json({ error: error.message });
+  }
+};
+
+export const searchProduct = async (req: Request, res: Response): Promise<any> => {
+  try {
+      const searchInput = req.query.search;
+      console.log(searchInput)
+      const page = req.query.page || 1;
+      const limit = req.query.limit || 10;
+      const products = await productServices.getProducts(
+        {},
+        1,
+        1000
+      );
+
+      const brands = await brandServices.getAllBrands();
+      const combinedData = [...products, ...brands.map(brand => ({ brandName: brand.name, imgPath: brand.imagePath }))];
+
+    const searcher = new FuzzySearch(combinedData, ['title', 'subTitle', 'brandName'], {
+      caseSensitive: false,
+    })
+    const result = searcher.search(searchInput, { page: page, limit: limit });
+   
+    const startIndex = (Number(page) - 1) * Number(limit);
+    const endIndex = Number(page) * Number(limit);
+    const paginatedResult = result.slice(startIndex, endIndex);
+    const count = result.length;
+    res.status(200).json({
+      paginatedResult,
+      count,
+    })
+  }
+  catch (err) {
+    res.status(500).send({error: 'Internal Server Error'})
+  }
+}
