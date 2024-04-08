@@ -9,6 +9,7 @@ router.get('/category/:category',validateGetByCategoryParams, productController.
 router.get('/new', productController.getProductsByArrival);
 router.get('/trendy', productController.getProductsByTrendy);
 router.get('/handpicked/:category', productController.getProductsHandpicked);
+router.get('/search/', productController.searchProduct);
 
 export default router;
 
