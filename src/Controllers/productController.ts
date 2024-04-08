@@ -189,3 +189,44 @@ export const getProductsByTrendy = async (
     res.status(error.status).json({ error: error.message });
   }
 };
+
+
+
+export const getProductsHandpicked = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+    const catID = req.params.category;
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    const options = {
+      where: {
+        categoryID: catID,
+        productID: {
+          [Op.in]: sequelize.literal(
+            `(SELECT productID FROM reviews GROUP BY productID HAVING AVG(rating) >= 4.5 and price <100)`
+          ),
+        },
+      },
+      order: [["title", "ASC"]], // Sorting products by title in ascending order
+
+      having: sequelize.literal(`avgReview >= 4.5 and price <100`),
+    };
+    const count = await productServices.countProducts(options);
+
+    const products = await productServices.getProducts(
+      options,
+      Number(page),
+      Number(limit)
+    );
+    return res.status(200).json({
+      products,
+      count,
+    });
+  } catch (error) {
+    console.log("Error getting products by handpicked", error);
+    res.status(error.status).json({ error: error.message });
+  }
+};
+

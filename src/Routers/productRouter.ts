@@ -8,6 +8,7 @@ router.get('/brand/:brand', validateGetByBrandsParams, productController.getProd
 router.get('/category/:category',validateGetByCategoryParams, productController.getProductsByCategory);
 router.get('/new', productController.getProductsByArrival);
 router.get('/trendy', productController.getProductsByTrendy);
+router.get('/handpicked/:category', productController.getProductsHandpicked);
 
 export default router;
 
