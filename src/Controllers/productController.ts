@@ -265,3 +265,23 @@ export const searchProduct = async (req: Request, res: Response): Promise<any> =
     res.status(500).send({error: 'Internal Server Error'})
   }
 }
+
+export const getProduct = async (req:Request, res:Response): Promise <any> =>
+  {
+    try
+    {
+      const productID = req.params.productID as string | undefined;
+      console.log(productID)
+      if (!productID) {
+        return res.status(400).json({ error: 'id for product required' });
+      }
+
+      const product = await productServices.getProductById(Number(productID));
+       res.status(200).json({product})
+    }
+    catch (err)
+    {
+      return res.status(500).json({error: 'Internal Server Error'});
+
+    }
+  }

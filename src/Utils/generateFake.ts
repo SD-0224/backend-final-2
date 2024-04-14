@@ -4,6 +4,7 @@ import { brandsData } from "./brandFake";
 import { imagesData } from "./imageFake";
 import { reviewData } from "./reviewFake";
 import { productsData } from "./productFaker";
+import { userData } from "./userFake";
 import * as db from "../Models/index";
 async function seedTables(
 ) {
@@ -27,7 +28,7 @@ async function seedTables(
 
     // Seed reviews
     await db.review.bulkCreate(reviewData);
-  
+    await db.User.bulkCreate(userData);
     console.log('Tables seeded successfully.');
   } catch (error) {
     console.error('Error seeding tables:', error);
