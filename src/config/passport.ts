@@ -2,7 +2,8 @@ import passport from "passport";
 import { User } from "../Models/user";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { registerNewUser } from "../Controllers/userController";
-
+import dotenv from 'dotenv';
+dotenv.config();
 passport.serializeUser((user, done) => {
   console.log("Use serialization ", user);
   done(null, user.dataValues.userID);
@@ -24,7 +25,7 @@ passport.use(
     {
       clientID:
         "399784734340-a3vcu32l1n73cps0bidcd4m5nu46kaqp.apps.googleusercontent.com",
-      clientSecret: "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",
+      clientSecret: process.env.clientSecretAuth,
       callbackURL: "http://localhost:3000/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
