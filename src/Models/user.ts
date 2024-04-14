@@ -9,10 +9,10 @@ interface UserAttributes extends Model {
   password: string;
   phoneNumber: string;
   image?: string | null; 
-  dateOfBirth?: Date | null; // Make it optional
+  dateOfBirth?: Date | null; 
 }
 
-const user = sequelize.define<UserAttributes>('users', {
+const User = sequelize.define<UserAttributes>('users', {
   userID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -20,11 +20,11 @@ const user = sequelize.define<UserAttributes>('users', {
   },
   firstName: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   lastName: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   email: {
     type: DataTypes.STRING,
@@ -32,10 +32,11 @@ const user = sequelize.define<UserAttributes>('users', {
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: false,
+    allowNull: true,
   },
   phoneNumber: {
     type: DataTypes.STRING,
+    allowNull: true,
   },
   image: {
     type: DataTypes.TEXT, 
@@ -45,12 +46,17 @@ const user = sequelize.define<UserAttributes>('users', {
     type: DataTypes.DATE,
     allowNull: true,
   },
+  googleId: {
+    type: DataTypes.STRING,
+    allowNull: true, 
+  },
+  
 }, {
   timestamps: false,
   tableName: 'users'
 });
 
 export {
-  user,
+  User,
   UserAttributes
 };
