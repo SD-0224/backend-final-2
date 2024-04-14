@@ -8,6 +8,8 @@ import {authRouter} from "./Routers/authRouter";
 import passport from 'passport';
 import path from "path";
 import session from 'express-session';
+import dotenv from 'dotenv';
+dotenv.config();
 // import { seedTables } from './Utils/generateFake';
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // app.set('views', path.join(__dirname, ''));
 app.use(passport.initialize());
 app.use(session({
-  secret: '!@weFG67BN&*UIGHgfg',
+  secret: process.env.sessionSecret,
   resave: false,
   saveUninitialized: false,
 }));
