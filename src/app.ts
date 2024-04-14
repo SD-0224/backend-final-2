@@ -2,8 +2,6 @@ import express from 'express';
 import { syncModels } from './config/dbConfig';
 import bodyParser from 'body-parser'
 import * as db from './Models/index';
-import { seedTables } from './Utils/generateFake';
-
 import {userRouter} from './Routers/userRouter';
 import {authRouter} from "./Routers/authRouter";
 import passport from 'passport';
@@ -67,4 +65,4 @@ syncModels()
   });
 //DO NOT UNCOMMENT UNLESS WE LOSE DATA!!!!!
 //DONT UNCOMMENT I REPEAT!
-// seedTables();
+ seedTables();
