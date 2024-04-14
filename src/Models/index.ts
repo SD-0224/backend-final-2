@@ -9,7 +9,7 @@ import { product } from "./product"
 import { images } from "./images"
 import { brand } from "./brand"
 import { category } from "./category"
-import { user} from "./user"
+import { User} from "./user"
 import { payment} from "./payment"
 import { cartItem } from "./cartItem"
 
@@ -30,26 +30,26 @@ orderItem.belongsTo(order, { foreignKey: 'orderID' });
 
 orderItem.belongsTo(product, { foreignKey: 'productID' });
 //address
-user.hasMany(address, { foreignKey: 'userID' });
-address.belongsTo(user, { foreignKey: 'userID' });
+User.hasMany(address, { foreignKey: 'userID' });
+address.belongsTo(User, { foreignKey: 'userID' });
 //cartItem
 cartItem.hasMany(cart, { foreignKey: 'cartID' });
 cart.belongsTo(cartItem, { foreignKey: 'cartID' });
 cart.belongsTo(product, { foreignKey: 'productID' })
 product.hasMany(cart, { foreignKey: 'productID' })
 //cart
-user.hasMany(cart, { foreignKey: 'userID' });
-cart.belongsTo(user, { foreignKey: 'userID' });
+User.hasMany(cart, { foreignKey: 'userID' });
+cart.belongsTo(User, { foreignKey: 'userID' });
 
 //Wishlist
-user.hasMany(wishList, { foreignKey: 'userID' });
-wishList.belongsTo(user, { foreignKey: 'userID' });
+User.hasMany(wishList, { foreignKey: 'userID' });
+wishList.belongsTo(User, { foreignKey: 'userID' });
 product.hasMany(wishList, { foreignKey: 'productID' });
 wishList.belongsTo(product, { foreignKey: 'productID' });
 
 //Payment
-user.hasMany(payment, { foreignKey: 'userID' });
-payment.belongsTo(user, { foreignKey: 'userID' });
+User.hasMany(payment, { foreignKey: 'userID' });
+payment.belongsTo(User, { foreignKey: 'userID' });
 
 payment.hasMany(order, { foreignKey: 'paymentID' });
 order.belongsTo(payment, { foreignKey: 'paymentID' });
@@ -58,10 +58,10 @@ product.hasMany(images, { foreignKey: 'productID' });
 images.belongsTo(product, { foreignKey: 'productID' });
 
 //address
-user.hasMany(address, { foreignKey: 'userID' })
-address.belongsTo(user, { foreignKey: 'userID' })
+User.hasMany(address, { foreignKey: 'userID' })
+address.belongsTo(User, { foreignKey: 'userID' })
 order.belongsTo(address, { foreignKey: 'addressID' });
 address.hasMany(order, { foreignKey: 'addressID' });
 
 
-export { user, address, cart, wishList, payment,product, order, orderItem, review, images,  brand, category};
+export { User, address, cart, wishList, payment,product, order, orderItem, review, images,  brand, category};
