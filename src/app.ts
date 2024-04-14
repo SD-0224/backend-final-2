@@ -10,7 +10,7 @@ import session from 'express-session';
 import dotenv from 'dotenv';
 dotenv.config();
 import { seedTables } from './Utils/generateFake';
-
+import cors from "cors";
 import productRouter from "./Routers/productRouter"
 import brandRouter from "./Routers/brandRouter"
 import categoryRouter from "./Routers/categoryRouter"
@@ -18,6 +18,8 @@ import categoryRouter from "./Routers/categoryRouter"
 const app = express();
 const PORT = process.env.PORT || 3000;
 const test = db.address;
+app.use(cors());
+
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
