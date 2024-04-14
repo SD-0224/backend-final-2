@@ -7,6 +7,7 @@ import productServices from "../Services/productServices";
 import { validationResult } from "express-validator";
 import { Op } from "sequelize";
 import brandServices from "../Services/brandServices";
+import reviewServices from "../Services/reviewServices";
 
 export const getProductsByCategory = async (
   req: Request,
@@ -280,6 +281,61 @@ export const getProduct = async (req:Request, res:Response): Promise <any> =>
        res.status(200).json({product})
     }
     catch (err)
+    {
+      return res.status(500).json({error: 'Internal Server Error'});
+
+    }
+  }
+
+
+export const rateProduct = async (req:Request, res:Response) : Promise<any> =>
+  {
+    try
+    {
+      const review = req.body.review;
+      const productID = req.params.productID;
+      console.log(req.body);
+      const userID  = req.body.userID;
+      const existProduct = await productServices.getProductById(Number(productID));
+
+      if (!existProduct)
+        {
+          return res.status(400).json({ error: 'product not found' });
+        }
+
+      const options = {
+        where: {
+          userID: userID,
+          productID: productID,
+        }
+      }
+
+      const existRate  = await reviewServices.getReviews(options);
+      if (existRate.length === 0)
+        {
+          await reviewServices.addReview({
+            userID: userID,
+            rating: review,
+            productID: productID,
+          });
+    
+          return res.status(200).json("Added Review!")
+        }
+        else { //existRate
+            await reviewServices.updateReview(
+              {
+                rating: review,
+              },
+              {
+                userID: userID,
+                productID: productID,
+              }
+            )
+            return res.status(200).json("Update Rate")
+          
+    }
+  }
+    catch (error)
     {
       return res.status(500).json({error: 'Internal Server Error'});
 
