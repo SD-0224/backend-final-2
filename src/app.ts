@@ -3,6 +3,7 @@ import { syncModels } from './config/dbConfig';
 import bodyParser from 'body-parser'
 import * as db from './Models/index';
 import { seedTables } from './Utils/generateFake';
+
 import {userRouter} from './Routers/userRouter';
 import {authRouter} from "./Routers/authRouter";
 import passport from 'passport';
@@ -10,7 +11,12 @@ import path from "path";
 import session from 'express-session';
 import dotenv from 'dotenv';
 dotenv.config();
-// import { seedTables } from './Utils/generateFake';
+import { seedTables } from './Utils/generateFake';
+
+import productRouter from "./Routers/productRouter"
+import brandRouter from "./Routers/brandRouter"
+import categoryRouter from "./Routers/categoryRouter"
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const test = db.address;
@@ -40,7 +46,10 @@ authRouter.get('/', (req, res) => {
 
 
 // Define routes or other middleware here
-// app.use('/products', productRoutes)
+app.use('/products', productRouter)
+app.use('/brands', brandRouter)
+app.use('/categories', categoryRouter)
+
 // app.use('/cart', cartRoutes )
 // app.use('/wishList', wishListRoutes)
 // app.use('/profile', profileRoutes )
