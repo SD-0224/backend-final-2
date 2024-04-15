@@ -21,6 +21,7 @@ const getProducts = async (
 ): Promise<any> => {
   console.log("Fetching products from the database...");
   try {
+    console.log(options.where)
     const products = db.product.findAll({
       where: options.where,
       attributes: [
@@ -30,7 +31,7 @@ const getProducts = async (
         "price",
         "discount",
         [sequelize.literal('(SELECT name FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brandName'],
-
+        [sequelize.literal('(SELECT name FROM category WHERE category.categoryID = products.categoryID LIMIT 1)'), 'category'],
         [sequelize.fn('COALESCE', sequelize.fn('AVG', sequelize.col('reviews.rating')), 0), 'avgReview'],
         [sequelize.fn('COUNT', sequelize.col('reviews.rating')), 'reviewCount'],
         [
