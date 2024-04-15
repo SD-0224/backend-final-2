@@ -25,10 +25,10 @@ async function seedTables(
     // Seed products
     await db.product.bulkCreate(productsData);
     await db.images.bulkCreate(imagesData);
+    await db.User.bulkCreate(userData);
 
     // Seed reviews
     await db.review.bulkCreate(reviewData);
-    await db.User.bulkCreate(userData);
     console.log('Tables seeded successfully.');
   } catch (error) {
     console.error('Error seeding tables:', error);
