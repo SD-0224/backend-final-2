@@ -21,7 +21,7 @@ const getProducts = async (
 ): Promise<any> => {
   console.log("Fetching products from the database...");
   try {
-    const products = db.product.findAll({
+    const products = db.Product.findAll({
       where: options.where,
       attributes: [
         "productID",
@@ -70,7 +70,7 @@ const countProducts = async (options: QueryOptions): Promise<number> => {
   console.log("Fetching product count from the database...");
   try {
     // Count the number of products matching the provided options
-    const productCount = await db.product.count({
+    const productCount = await db.Product.count({
       where: options.where,
     });
     return productCount;
