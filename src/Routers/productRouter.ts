@@ -13,6 +13,7 @@ router.get('/search/', productController.searchProduct);
 router.get('/:productID', productController.getProduct);
 router.post('/rate/:productID', productController.rateProduct);
 
+router.get('/reviews/:productID', productController.getReviews);
 
 export default router;
 

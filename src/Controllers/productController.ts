@@ -341,3 +341,44 @@ export const rateProduct = async (req:Request, res:Response) : Promise<any> =>
 
     }
   }
+
+  export const getReviews = async (req: Request, res: Response): Promise<any> => {
+
+    try {
+      const productID = req.params.productID;
+  
+      if (!productID) {
+        return res.status(400).json({error: "Invalid Product"});
+      }
+  
+      const count = await db.review.count({
+        where: {
+          productID: productID,
+        },
+      });
+  
+      const options = {
+        where: {
+          productID: productID,
+        },
+        include: [{
+          model: db.User,
+          attributes: ['firstName', 'lastName'],
+        }],
+        order: [["rating", "DESC"]]
+      }
+  
+      const reviews = await reviewServices.getReviews(options);
+  
+      return res.status(200).json(
+        {
+          "totalCount": count,
+          "reviews": reviews
+        }
+      );
+  
+    } catch (error) {
+      console.error(error);
+      return res.status(error.status).json({error: error.message})
+    }
+  }
