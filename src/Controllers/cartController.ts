@@ -1,5 +1,5 @@
 import { CartItem } from "../Models/cartItem";
-import{Cart}from "../Models/cart";
+import { Cart } from "../Models/cart";
 import * as db from "../Models/index";
 import { sequelize } from "../config/dbConfig";
 import { Request, Response } from "express";
@@ -25,75 +25,62 @@ export const cartController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
-   addItemsToCart : async (req: Request, res: Response) => {
+  addItemsToCart: async (req: Request, res: Response) => {
     try {
-        const userId = req.params.userID;
-        const productId = req.params.productID;
-        const { quantity } = req.body;
-        
-        // Debugging: Log the userId to verify it's correct
-        console.log("userId:", userId);
-        
-        // Check if the user exists
-        const user = await db.User.findByPk(userId);
-        if (!user) {
-            console.error("User not found for ID:", userId);
-            return res.status(404).json({ error: "User not found" });
-        }
-        
-        // Debugging: Log the product ID to verify it's correct
-        console.log("Product ID:", productId);
-        
-        //Checks if the product already exists
-        const productItem = await db.Product.findByPk(productId);
-        if (!productItem) {
-            console.error("Product not found for ID:", productId);
-            return res.status(404).json({ error: "Product not found" });
-        }
-        
-        // Debugging: Log the user and product information before creating the cart
-        console.log("User:", user);
-        console.log("Product:", productItem);
-        
-        // Create or find the cart
-        let cart = await Cart.findOne({ where: { userID: userId } });
-        if (!cart) {
-            // Create the cart
-            try {
-                cart = await Cart.create({ userID: userId });
-            } catch (error) {
-                console.error("Error creating cart:", error);
-                return res.status(500).json({ error: "Error creating cart" });
-            }
-        }
-        
-        // Debugging: Log the created cart
-        console.log("Cart:", cart);
-        
-        // Create the cart item
+      const userId = req.params.userID;
+      const productId = req.params.productID;
+      const { quantity } = req.body;
+
+      // Check if the user exists
+      const user = await db.User.findByPk(userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      //Checks if the product already exists
+      const productItem = await db.Product.findByPk(productId);
+      if (!productItem) {
+        return res.status(404).json({ error: "Product not found" });
+      }
+
+      // Create or find the cart based on the userID
+      let cart = await Cart.findOne({ where: { userID: userId } });
+
+      if (!cart) {
+        // Create the cart
         try {
-            await db.CartItem.create({ userId: cart.userID, productId, productQuantity: quantity });
+          cart = await Cart.create({ userID: userId });
         } catch (error) {
-            console.error("Error creating cart item:", error);
-            return res.status(500).json({ error: "Error creating cart item" });
+          return res.status(500).json({ error: "Error creating cart" });
         }
-        
-        res.json({
-            message: `Adding ${productId} to cart for the user ${userId}`,
-            product: {
-                title: productItem.title,
-                subtle: productItem.subTitle,
-                quantity: productItem.quantity,
-                price: productItem.price,
-                subtotal: productItem.price * quantity,
-            },
+      }
+
+      // Create the cart item
+      try {
+        await db.CartItem.create({
+          userID: cart.userID,
+          cartID: cart.cartID,
+          productID: productId,
+          productQuantity: quantity,
         });
-        
+      } catch (error) {
+        return res.status(500).json({ error: "Error creating cart item" });
+      }
+
+      res.json({
+        message: `Adding ${productId} to cart for the user ${userId}`,
+        product: {
+          title: productItem.title,
+          subtle: productItem.subTitle,
+          quantity: productItem.quantity,
+          price: productItem.price,
+          subtotal: productItem.price * quantity,
+        },
+      });
     } catch (error) {
-        console.error(error); 
-        res.status(500).json({ error: "Internal server Error" });
+      console.error(error);
+      res.status(500).json({ error: "Internal server Error" });
     }
-},
+  },
   deleteItemsFromCart: async (req: Request, res: Response) => {
     try {
       const { userId, productId } = req.body;
