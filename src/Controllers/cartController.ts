@@ -101,7 +101,7 @@ export const cartController = {
   },
   increasedQty: async (req: Request, res: Response) => {
     try {
-      const { userId, productId } = req.body;
+      const {  productId } = req.body;
       const productItem = await Product.findByPk(productId);
       if (!productItem) {
         return res.status(404).json({ error: "Product not found" });
@@ -117,7 +117,7 @@ export const cartController = {
   },
   decreasedQty: async (req: Request, res: Response) => {
     try {
-      const { userId, productId } = req.body;
+      const {productId } = req.body;
       const productItem = await Product.findByPk(productId);
       if (!productItem) {
         return res.status(404).json({ error: "Product not found" });
