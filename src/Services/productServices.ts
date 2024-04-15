@@ -80,9 +80,57 @@ const countProducts = async (options: QueryOptions): Promise<number> => {
     throw new Error("Failed to fetch product count");
   }
 };
+
+const getProductById = async (id:number) =>
+  {
+    try
+    {
+      const Product = await db.product.findOne({
+        attributes: [
+          "productID",
+          "title",
+          "subTitle",
+          "description",
+          "price",
+          "discount",
+          "quantity",
+          "arrival",
+          [sequelize.literal('(SELECT name FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brand'],
+          [sequelize.fn('COUNT', sequelize.col("reviews.rating")), 'reviewsCount'],
+        ],
+  
+        include: [
+          {
+            model: db.images,
+            attributes: ['imageID', 'imgPath', 'imageIndex'],
+            required: false
+          },
+          {
+            model: db.review,
+            attributes: [], as: "reviews",
+            required: false
+          }
+        ],
+        where: {
+          productID: id
+        },
+        group: ['productID', 'imageID'],
+        subQuery: false
+  
+      });
+      return Product;
+    }
+    catch (error)
+    {
+      console.error("Error fetching product:", error);
+      throw new Error("Failed to fetch product");
+    }
+  }
 const productServices = {
   getProducts,
   countProducts,
+  getProductById,
 };
+
 
 export default productServices;
