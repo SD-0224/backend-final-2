@@ -15,6 +15,8 @@ export const cartController = {
         where: { userID: userId },
         include: [{ model: Product }],
       });
+      console.log("cartItems",cartItems);
+      
       if (cartItems.length === 0) {
         res.status(404).json({ error: "Cart is empty" });
       }

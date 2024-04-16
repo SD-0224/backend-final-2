@@ -5,7 +5,7 @@ import {cartController}
 
  const cartRouter=express.Router();
 
- cartRouter.get("/:id",cartController.getCartByUserId);
+ cartRouter.get("/:userId",cartController.getCartByUserId);
  cartRouter.post("/:userID/:productID", cartController.addItemsToCart);
  cartRouter.delete("/",cartController.deleteItemsFromCart);
  cartRouter.delete("/clear",cartController.clearCart);
