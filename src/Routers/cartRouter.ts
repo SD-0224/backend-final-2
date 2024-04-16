@@ -8,7 +8,7 @@ import {cartController}
  cartRouter.get("/:id",cartController.getCartByUserId);
  cartRouter.post("/:userID/:productID", cartController.addItemsToCart);
  cartRouter.delete("/",cartController.deleteItemsFromCart);
- cartRouter.delete("/clear/:id",cartController.clearCart);
+ cartRouter.delete("/clear",cartController.clearCart);
  cartRouter.put("/inc",cartController.increasedQty);
  cartRouter.put("/dec",cartController.decreasedQty);
 

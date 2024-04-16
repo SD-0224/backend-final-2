@@ -92,16 +92,27 @@ export const cartController = {
   },
   clearCart: async (req: Request, res: Response) => {
     try {
-      let userId = req.params.userId;
-      await CartItem.destroy({ where: { userId } });
-      res.json({ message: `cart cleared for ${userId}` });
+      let userId = req.body.userId;
+      console.log("userId",userId);
+      
+      const deletedCount = await CartItem.destroy({
+        where: { userID: userId },
+      });
+      console.log("deletedCount",deletedCount);
+      if (deletedCount > 0) {
+        res.json({message:`Cart cleared successfully for user${userId}`})
+      }
+      else{
+
+        res.json({ message: ` No cartItem found  for ${userId}` });
+      }
     } catch (error) {
       res.json({ error: "Internal server Error" });
     }
   },
   increasedQty: async (req: Request, res: Response) => {
     try {
-      const {  productId } = req.body;
+      const { productId } = req.body;
       const productItem = await Product.findByPk(productId);
       if (!productItem) {
         return res.status(404).json({ error: "Product not found" });
@@ -117,7 +128,7 @@ export const cartController = {
   },
   decreasedQty: async (req: Request, res: Response) => {
     try {
-      const {productId } = req.body;
+      const { productId } = req.body;
       const productItem = await Product.findByPk(productId);
       if (!productItem) {
         return res.status(404).json({ error: "Product not found" });
