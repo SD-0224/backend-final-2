@@ -116,6 +116,8 @@ export const cartController = {
     try {
       const { productId } = req.body;
       const productItem = await Product.findByPk(productId);
+      console.log("productId",productId);
+      
       if (!productItem) {
         return res.status(404).json({ error: "Product not found" });
       }
