@@ -23,9 +23,6 @@ const getProducts = async (
   try {
 
     const products = db.Product.findAll({
-    console.log(options.where)
-    const products = db.product.findAll({
-
       where: options.where,
       attributes: [
         "productID",
@@ -89,7 +86,7 @@ const getProductById = async (id:number, options?:QueryOptions) =>
   {
     try
     {
-      const Product = await db.product.findOne({
+      const Product = await db.Product.findOne({
         attributes: [
           "productID",
           "title",

@@ -25,8 +25,8 @@ Product.belongsTo(category, { foreignKey: 'categoryID' });
 Product.hasMany(review, { foreignKey: 'productID' })
 review.belongsTo(Product, { foreignKey: 'productID' })
 
-product.hasMany(review, { foreignKey: 'productID' })
-review.belongsTo(product, { foreignKey: 'productID' })
+Product.hasMany(review, { foreignKey: 'productID' })
+review.belongsTo(Product, { foreignKey: 'productID' })
 User.hasMany(review, { foreignKey: 'userID' })
 review.belongsTo(User, { foreignKey: 'userID' })
 //Order
