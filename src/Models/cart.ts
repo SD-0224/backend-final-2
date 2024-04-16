@@ -8,8 +8,8 @@ interface cartAttributes extends Model {
   isOrdered: boolean;
 }
 
-const cart = sequelize.define<cartAttributes>('carts', {
-  cartItemID: {
+const Cart = sequelize.define<cartAttributes>('carts', {
+  cartID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
@@ -23,4 +23,4 @@ const cart = sequelize.define<cartAttributes>('carts', {
   }
   );
   
-  export { cart, cartAttributes };
+  export { Cart, cartAttributes };

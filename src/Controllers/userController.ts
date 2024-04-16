@@ -1,7 +1,7 @@
 import { User } from "../Models/user";
 import bcrypt, { genSaltSync } from "bcrypt";
 import generateFakeSecretKey from "../Utils/helper";
-import { validateEmail, validatePassword } from "../validations/errorHandler";
+import { validateEmail, validatePassword } from "../Validators/errorHandler";
 const jwt = require("jsonwebtoken");
 //Generate fake secret key
 const secretKey = generateFakeSecretKey();

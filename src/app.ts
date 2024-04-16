@@ -14,7 +14,7 @@ import cors from "cors";
 import productRouter from "./Routers/productRouter"
 import brandRouter from "./Routers/brandRouter"
 import categoryRouter from "./Routers/categoryRouter"
-
+import cartRouter from './Routers/cartRouter';
 const app = express();
 const PORT = process.env.PORT || 3000;
 const test = db.address;
@@ -39,7 +39,7 @@ app.set('views', path.join(__dirname, '../src/views'));
 app.use('/user', userRouter); 
 app.use('/auth', authRouter);
 
-// Error route for authRouter
+// Sign up route for authRouter
 authRouter.get('/', (req, res) => {
   res.render('signUp'); 
 });
@@ -49,8 +49,7 @@ authRouter.get('/', (req, res) => {
 app.use('/products', productRouter)
 app.use('/brands', brandRouter)
 app.use('/categories', categoryRouter)
-
-// app.use('/cart', cartRoutes )
+app.use("/cart",cartRouter);
 // app.use('/wishList', wishListRoutes)
 // app.use('/profile', profileRoutes )
 // app.use('/orders', orderRoutes)

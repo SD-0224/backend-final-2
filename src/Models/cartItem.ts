@@ -1,14 +1,17 @@
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/dbConfig";
+import { Cart } from "./cart"; // Import the Cart model
+
 interface cartItemAttributes extends Model {
-  cartID: number;
+  cartItemID: number;
   userID: number;
+  cartID: number; 
   productID: number;
   productQuantity: number;
   isOrdered: boolean;
 }
 
-const cartItem = sequelize.define<cartItemAttributes>('cartItems', {
+const CartItem = sequelize.define<cartItemAttributes>('cartItems', {
   cartItemID: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -17,6 +20,11 @@ const cartItem = sequelize.define<cartItemAttributes>('cartItems', {
   userID: {
     type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  cartID: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: { model: Cart, key: 'cartID' } 
   },
   productID: {
     type: DataTypes.INTEGER,
@@ -36,4 +44,7 @@ const cartItem = sequelize.define<cartItemAttributes>('cartItems', {
   tableName: 'cartItems'
 });
 
-export { cartItem, cartItemAttributes };
+
+CartItem.belongsTo(Cart, { foreignKey: 'cartID' });
+
+export { CartItem, cartItemAttributes };
