@@ -5,9 +5,11 @@ import { imagesData } from "./imageFake";
 import { reviewData } from "./reviewFake";
 import { productsData } from "./productFaker";
 import { fakeCartData } from "./cartItemFake";
+import { userData } from "./userFake";
 import * as db from "../Models/index";
 import { userData } from "./userFake";
 import { CartData } from "./cartFake";
+
 async function seedTables() {
   try {
     // Assuming you have defined models and their associations
@@ -26,6 +28,7 @@ async function seedTables() {
     // Seed products
     await db.Product.bulkCreate(productsData);
     await db.images.bulkCreate(imagesData);
+    await db.User.bulkCreate(userData);
 
     // Seed reviews
     await db.review.bulkCreate(reviewData);
@@ -39,6 +42,7 @@ async function seedTables() {
     await db.CartItem.bulkCreate(fakeCartData);
 
     console.log("Tables seeded successfully.");
+    console.log('Tables seeded successfully.');
   } catch (error) {
     console.error("Error seeding tables:", error);
   }

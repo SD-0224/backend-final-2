@@ -8,3 +8,34 @@ export const userData=[{"userID":1,"firstName":"Griswold","lastName":"Tettersell
 {"userID":8,"firstName":"Denys","lastName":"Bence","email":"dbence7@symantec.com","password":"pnieJALF6908#`.@4.7","phoneNumber":"134-769-5160","image":"https://robohash.org/excepturiimpeditamet.png?size=50x50&set=set1","dateOfBirth":"2/4/2024"},
 {"userID":9,"firstName":"Axel","lastName":"Emett","email":"aemett8@diigo.com","password":"ffnzFXYE8529%!_@JD.E1NTaOCgZk|9","phoneNumber":"926-779-6273","image":"https://robohash.org/quiaiustovelit.png?size=50x50&set=set1","dateOfBirth":"6/11/2023"},
 {"userID":10,"firstName":"Der","lastName":"Wonfar","email":"dwonfar9@thetimes.co.uk","password":"hoxeMMFL9013/(\\`R\"<6G","phoneNumber":"468-563-1054","image":"https://robohash.org/etnihilarchitecto.png?size=50x50&set=set1","dateOfBirth":"9/24/2023"}]
+export const userData = 
+[
+    {
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "john.doe@example.com",
+      "password": "hashedpassword123",
+      "phoneNumber": "+1234567890",
+      "image": "https://example.com/john.jpg",
+      "dateOfBirth": "1990-05-15"
+    },
+    {
+      "firstName": "Jane",
+      "lastName": "Smith",
+      "email": "jane.smith@example.com",
+      "password": "hashedpassword456",
+      "phoneNumber": "+1987654321",
+      "image": "https://example.com/jane.jpg",
+      "dateOfBirth": "1995-10-20"
+    },
+    {
+      "firstName": "Alice",
+      "lastName": "Johnson",
+      "email": "alice.johnson@example.com",
+      "password": "hashedpassword789",
+      "phoneNumber": "+1122334455",
+      "image": "https://example.com/alice.jpg",
+      "dateOfBirth": "1985-03-08"
+    }
+  ]
+  

@@ -10,6 +10,12 @@ router.get('/new', productController.getProductsByArrival);
 router.get('/trendy', productController.getProductsByTrendy);
 router.get('/handpicked/:category', productController.getProductsHandpicked);
 router.get('/search/', productController.searchProduct);
+router.get('/related', productController.getRelatedProcuts);
+
+router.get('/:productID', productController.getProduct);
+router.post('/rate/:productID', productController.rateProduct);
+
+router.get('/reviews/:productID', productController.getReviews);
 
 export default router;
 
