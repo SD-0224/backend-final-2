@@ -23,11 +23,6 @@ const getProducts = async (
   try {
 
     const products = db.Product.findAll({
-
-    console.log(options.where),
-    const products = db.Product.findAll({
-
-
       where: options.where,
       attributes: [
         "productID",
