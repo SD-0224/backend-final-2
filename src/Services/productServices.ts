@@ -30,8 +30,13 @@ const getProducts = async (
         "subTitle",
         "price",
         "discount",
+        "slug",
         [sequelize.literal('(SELECT name FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brandName'],
+        [sequelize.literal('(SELECT slug FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brand-slug'],
+
         [sequelize.literal('(SELECT name FROM category WHERE category.categoryID = products.categoryID LIMIT 1)'), 'category'],
+        [sequelize.literal('(SELECT slug FROM category WHERE category.categoryID = products.categoryID LIMIT 1)'), 'category-slug'],
+
         [sequelize.fn('COALESCE', sequelize.fn('AVG', sequelize.col('reviews.rating')), 0), 'avgReview'],
         [sequelize.fn('COUNT', sequelize.col('reviews.rating')), 'reviewCount'],
         [
@@ -96,8 +101,11 @@ const getProductById = async (id:number, options?:QueryOptions) =>
           "discount",
           "quantity",
           "arrival",
+          "slug",
           [sequelize.literal('(SELECT name FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brand'],
+          [sequelize.literal('(SELECT slug FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brand-slug'],
           [sequelize.literal('(SELECT name FROM category WHERE category.categoryID = products.categoryID LIMIT 1)'), 'category'],
+          [sequelize.literal('(SELECT slug FROM category WHERE category.categoryID = products.categoryID LIMIT 1)'), 'category-slug'],
           [sequelize.fn('COALESCE', sequelize.fn('AVG', sequelize.col('reviews.rating')), 0), 'avgReview'],
           [sequelize.fn('COUNT', sequelize.col("reviews.rating")), 'reviewsCount'],
         ],

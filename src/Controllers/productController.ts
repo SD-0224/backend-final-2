@@ -298,7 +298,7 @@ export const searchProduct = async (
 
 export const getProduct = async (req: Request, res: Response): Promise<any> => {
   try {
-    const slug = req.params.product as string | undefined;
+    const slug = req.params.product;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -307,6 +307,12 @@ export const getProduct = async (req: Request, res: Response): Promise<any> => {
       return res.status(400).json({ error: "slug for product required" });
     }
     const prod = await db.Product.findOne({where: {"slug":slug}})
+    if (!prod)
+      {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
     const product = await productServices.getProductById(Number(prod.productID));
     res.status(200).json({ product });
   } catch (err) {
