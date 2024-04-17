@@ -7,7 +7,6 @@ import { productsData } from "./productFaker";
 import { fakeCartData } from "./cartItemFake";
 import { userData } from "./userFake";
 import * as db from "../Models/index";
-import { userData } from "./userFake";
 import { CartData } from "./cartFake";
 
 async function seedTables() {
