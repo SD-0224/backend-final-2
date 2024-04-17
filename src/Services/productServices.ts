@@ -23,8 +23,10 @@ const getProducts = async (
   try {
 
     const products = db.Product.findAll({
+
     console.log(options.where),
     const products = db.Product.findAll({
+
 
       where: options.where,
       attributes: [
@@ -85,7 +87,7 @@ const countProducts = async (options: QueryOptions): Promise<number> => {
   }
 };
 
-const getProductById = async (id:number) =>
+const getProductById = async (id:number, options?:QueryOptions) =>
   {
     try
     {
@@ -101,9 +103,7 @@ const getProductById = async (id:number) =>
           "arrival",
           [sequelize.literal('(SELECT name FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brand'],
           [sequelize.literal('(SELECT name FROM category WHERE category.categoryID = products.categoryID LIMIT 1)'), 'category'],
-
           [sequelize.fn('COALESCE', sequelize.fn('AVG', sequelize.col('reviews.rating')), 0), 'avgReview'],
-
           [sequelize.fn('COUNT', sequelize.col("reviews.rating")), 'reviewsCount'],
         ],
   
