@@ -30,6 +30,7 @@ const getProducts = async (
         "subTitle",
         "price",
         "discount",
+        "slug",
         [sequelize.literal('(SELECT name FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brandName'],
         [sequelize.literal('(SELECT name FROM category WHERE category.categoryID = products.categoryID LIMIT 1)'), 'category'],
         [sequelize.fn('COALESCE', sequelize.fn('AVG', sequelize.col('reviews.rating')), 0), 'avgReview'],
