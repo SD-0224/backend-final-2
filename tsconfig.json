@@ -5,7 +5,7 @@
     "module": "commonjs",
     "target": "ES5",
     "esModuleInterop": true,
-    "moduleResolution": "Node",
+    "moduleResolution": "node",
     "sourceMap": false,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
