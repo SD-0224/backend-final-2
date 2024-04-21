@@ -15,8 +15,21 @@ import productRouter from "./Routers/productRouter"
 import brandRouter from "./Routers/brandRouter"
 import categoryRouter from "./Routers/categoryRouter"
 import cartRouter from './Routers/cartRouter';
+import pino from 'pino';
+import {config} from '../dist/config/pino';
 const app = express();
 const PORT = process.env.PORT || 3000;
+const logger = pino({
+  level: config.level
+  || 'info',
+  formatters: {
+    level: (label) => {
+      return { level: label.toUpperCase() };
+    },
+  },
+  timestamp:pino.stdTimeFunctions.isoTime,
+ });
+logger.info("Application started");
 const test = db.address;
 app.use(cors());
 

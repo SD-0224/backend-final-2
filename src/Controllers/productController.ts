@@ -8,14 +8,15 @@ import { validationResult } from "express-validator";
 import { Op } from "sequelize";
 import brandServices from "../Services/brandServices";
 import reviewServices from "../Services/reviewServices";
+import {logger} from "../config/pino";
 export const getProductsByCategory = async (
   req: Request,
   res: Response
 ): Promise<any> => {
   try {
     // Extract category ID from route parameter
-    const catID = req.params.category;
-
+    const cartID = req.params.category;
+logger.info(`Get the product by category ${cartID}`);
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
@@ -23,14 +24,16 @@ export const getProductsByCategory = async (
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Validation error occurred  ",errors);
       return res.status(400).json({ errors: errors.array() });
     }
 
     // Find category by ID in the database
-    const category = await db.category.findByPk(catID);
+    const category = await db.category.findByPk(cartID);
 
     // If category not found, return 404 response
     if (!category) {
+      logger.error("Category not found");
       return res.status(404).json({
         message: "Category not found",
       });
@@ -38,7 +41,7 @@ export const getProductsByCategory = async (
 
     // Define options for querying products
     const options = {
-      where: { categoryID: catID },
+      where: { categoryID: cartID },
       order: [["title", "ASC"]], // Sorting products by title in ascending order
     };
 
@@ -57,9 +60,10 @@ export const getProductsByCategory = async (
       products,
       count,
     });
+    logger.info(`Product retrieved successfully`);
   } catch (error) {
     // Handle errors and send appropriate error response
-    console.log("Error getting products by cat", error);
+    logger.error("Error getting products by cat", error)
     res.status(error.status).json({ error: error.message });
   }
 };
