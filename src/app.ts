@@ -15,13 +15,9 @@ import productRouter from "./Routers/productRouter"
 import brandRouter from "./Routers/brandRouter"
 import categoryRouter from "./Routers/categoryRouter"
 import cartRouter from './Routers/cartRouter';
-import pino from 'pino';
-import {config} from '../dist/config/pino';
 const app = express();
 const PORT = process.env.PORT || 3000;
 const test = db.address;
-const logger = pino(config);
-logger.info("Application started");
 app.use(cors());
 
 app.use(express.json());
