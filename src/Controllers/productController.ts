@@ -408,7 +408,7 @@ export const getReviews = async (req: Request, res: Response): Promise<any> => {
     const slug = req.params.product;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error("Get Review is not valid ",errors)
+      logger.error("Get Review is not valid ", errors);
       return res.status(400).json({ errors: errors.array() });
     }
     if (!slug) {
@@ -427,7 +427,7 @@ export const getReviews = async (req: Request, res: Response): Promise<any> => {
       },
     });
 
-    logger.info("Total count of products",count)
+    logger.info("Total count of products", count);
     const options = {
       where: {
         productID: existProduct.productID,
@@ -442,17 +442,17 @@ export const getReviews = async (req: Request, res: Response): Promise<any> => {
     };
 
     const reviews = await reviewServices.getReviews(options);
-logger.info("Reviews Retrieved successfully",reviews);
+    logger.info("Reviews Retrieved successfully", reviews);
     return res.status(200).json({
       totalCount: count,
       reviews: reviews,
     });
   } catch (error) {
-logger.error("Error retrieving  failed ",error);
+    logger.error("Error retrieving  failed ", error);
     return res.status(error.status).json({ error: error.message });
   }
 };
-export const getRelatedProcuts = async (
+export const getRelatedProdcuts = async (
   req: Request,
   res: Response
 ): Promise<any> => {
@@ -460,12 +460,14 @@ export const getRelatedProcuts = async (
     // Extract brand ID from route parameter
     const brandName = req.query.brand;
     const categoryName = req.query.category;
+    logger.info(`category name ${categoryName} with brand name ${brandName}`);
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Invalid get product value",errors);
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -474,14 +476,16 @@ export const getRelatedProcuts = async (
     const category = await db.category.findOne({
       where: { name: categoryName },
     });
-    console.log(brand);
+logger.info(`Brand value ${brand}`);
     // If brand not found, return 404 response
     if (!brand) {
+      logger.error("Brand not found");
       return res.status(404).json({
         message: "Brand not found",
       });
     }
     if (!category) {
+      logger.error("Category not found");
       return res.status(404).json({
         message: "Category not found",
       });
@@ -496,7 +500,7 @@ export const getRelatedProcuts = async (
 
     // Count total number of products for the brand
     const count = await productServices.countProducts(options);
-
+logger.info("Total number of products",count);
     // Retrieve products based on options, page, and limit
     const products = await productServices.getProducts(
       options,
@@ -505,13 +509,14 @@ export const getRelatedProcuts = async (
     );
 
     // Return products and count in the response
+    logger.info("Total number of products",count);
     return res.status(200).json({
       products,
       count,
     });
   } catch (error) {
     // Handle errors and send appropriate error response
-    console.log("Error getting related products", error);
+    logger.error("Error getting related products", error)
     res.status(error.status).json({ error: error.message });
   }
 };
