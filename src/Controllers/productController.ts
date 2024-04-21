@@ -145,6 +145,7 @@ export const getProductsByArrival = async (
     };
     // Count total number of products for the brand
     const count = await productServices.countProducts(options);
+    logger.debug(`Count of Products by arrival: ${count}`);
     // Retrieve products based on options, page, and limit
     const products = await productServices.getProducts(
       options,
@@ -152,6 +153,8 @@ export const getProductsByArrival = async (
       Number(limit)
     );
 
+    //Log the retrieved products
+    logger.debug(`Products retrieved :${products}`);
     // Return products and count in the response
     return res.status(200).json({
       products,
@@ -159,8 +162,7 @@ export const getProductsByArrival = async (
     });
   } catch (error) {
     // Handle errors and send appropriate error response
-
-    console.log("Error getting products by trendy", error);
+    logger.error("Error getting products by trendy", error)
     res.status(error.status).json({ error: error.message });
   }
 };
