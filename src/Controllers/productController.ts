@@ -198,21 +198,23 @@ export const getProductsByTrendy = async (
       having: sequelize.literal(`avgReview >= 4.5`),
     };
     const count = await productServices.countProducts(options);
-
+logger.info("Total product count"+ count);
     const products = await productServices.getProducts(
       options,
       Number(page),
       Number(limit)
     );
+    logger.info("Total products retrieved by trendy successfully",products);
     return res.status(200).json({
       products,
       count,
     });
   } catch (error) {
-    console.log("Error getting products by trendy", error);
+    logger.error("Error getting products by trendy", error)
     res.status(error.status).json({ error: error.message });
   }
 };
+
 
 export const getProductsHandpicked = async (
   req: Request,
