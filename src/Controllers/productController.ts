@@ -279,11 +279,13 @@ export const searchProduct = async (
     const limit = req.query.limit || 10;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Invalid search value",errors);
       return res.status(400).json({ errors: errors.array() });
     }
     const products = await productServices.getProducts({}, 1, 1000);
-
+    logger.info("Product retrieved successfully",products);
     const brands = await brandServices.getAllBrands();
+    logger.info("Brand retrieved successfully",brands);
     const combinedData = [
       ...products,
       ...brands.map((brand) => ({
@@ -300,7 +302,7 @@ export const searchProduct = async (
       }
     );
     const result = searcher.search(searchInput, { page: page, limit: limit });
-
+logger.info("search value result",result);
     const startIndex = (Number(page) - 1) * Number(limit);
     const endIndex = Number(page) * Number(limit);
     const paginatedResult = result.slice(startIndex, endIndex);
@@ -310,6 +312,7 @@ export const searchProduct = async (
       count,
     });
   } catch (err) {
+    logger.error("Internal Server Error",err);
     res.status(500).send({ error: "Internal Server Error" });
   }
 };
