@@ -22,11 +22,31 @@ const orderItem = sequelize.define<OrderAttributes>('orderItems', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  price: { 
+  productQuantity: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  productPrice: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  productTitle: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  productSubtitle: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  productDiscount: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  subTotal: {
     type: DataTypes.FLOAT
   }
 }, {
-  timestamps: false,
+  timestamps: true,
   tableName: 'orderItems'
 });
 

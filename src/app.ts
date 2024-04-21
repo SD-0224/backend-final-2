@@ -19,7 +19,7 @@ import pino from 'pino';
 import {config} from '../dist/config/pino';
 const app = express();
 const PORT = process.env.PORT || 3000;
-const logger = pino({
+ const logger = pino({
   level: config.level
   || 'info',
   formatters: {
@@ -79,4 +79,4 @@ syncModels()
   });
 //DO NOT UNCOMMENT UNLESS WE LOSE DATA!!!!!
 //DONT UNCOMMENT I REPEAT!
- seedTables();
+//  seedTables();

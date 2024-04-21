@@ -15,8 +15,10 @@ export const getProductsByCategory = async (
 ): Promise<any> => {
   try {
     // Extract category ID from route parameter
-    const cartID = req.params.category;
-logger.info(`Get the product by category ${cartID}`);
+
+ const slug = req.params.category;
+logger.info(`Get the product by category ${slug}`);
+
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
@@ -27,10 +29,8 @@ logger.info(`Get the product by category ${cartID}`);
       logger.error("Validation error occurred  ",errors);
       return res.status(400).json({ errors: errors.array() });
     }
-
     // Find category by ID in the database
-    const category = await db.category.findByPk(cartID);
-
+    const category = await db.category.findOne({where:{"slug": slug}});
     // If category not found, return 404 response
     if (!category) {
       logger.error("Category not found");
@@ -41,7 +41,7 @@ logger.info(`Get the product by category ${cartID}`);
 
     // Define options for querying products
     const options = {
-      where: { categoryID: cartID },
+      where: { categoryID: category.categoryID },
       order: [["title", "ASC"]], // Sorting products by title in ascending order
     };
 
@@ -75,8 +75,9 @@ export const getProductsByBrand = async (
 ): Promise<any> => {
   try {
     // Extract brand ID from route parameter
-    const brandID = req.params.brand;
-logger.info(`Get ProductsByBrand ${brandID}`)
+
+    const slug = req.params.brand;
+logger.info(`Get ProductsByBrand ${slug}`)
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
@@ -88,8 +89,10 @@ logger.info(`Get ProductsByBrand ${brandID}`)
     }
 
     // Find brand by ID in the database
-    const brand = await db.brand.findByPk(brandID);
+
+    const brand = await db.brand.findOne({where:{"slug": slug}});
 logger.info(`Brand by ID:${brand.brandID}`);
+
     // If brand not found, return 404 response
     if (!brand) {
       logger.error("Brand not found");
@@ -100,7 +103,7 @@ logger.info(`Brand by ID:${brand.brandID}`);
 
     // Define options for querying products
     const options = {
-      where: { brandID: brandID },
+      where: { brandID: brand.brandID },
       order: [["title", "ASC"]], // Sorting products by title in ascending order
     };
 
@@ -134,6 +137,10 @@ export const getProductsByArrival = async (
   try {
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
     const currentDate = new Date();
     const minimum = currentDate.setMonth(currentDate.getMonth() - 3);
     const options = {
@@ -174,6 +181,10 @@ export const getProductsByTrendy = async (
   try {
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
     const options = {
       where: {
         productID: {
@@ -208,12 +219,24 @@ export const getProductsHandpicked = async (
   res: Response
 ): Promise<any> => {
   try {
-    const catID = req.params.category;
+    const slug = req.params.category;
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const category = await db.category.findOne({where:{"slug": slug}});
+
+    // If category not found, return 404 response
+    if (!category) {
+      return res.status(404).json({
+        message: "Category not found",
+      });
+    }
     const options = {
       where: {
-        categoryID: catID,
+        categoryID: category.categoryID,
         productID: {
           [Op.in]: sequelize.literal(
             `(SELECT productID FROM reviews GROUP BY productID HAVING AVG(rating) >= 4.5 and price <100)`
@@ -247,9 +270,12 @@ export const searchProduct = async (
 ): Promise<any> => {
   try {
     const searchInput = req.query.search;
-    console.log(searchInput);
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
     const products = await productServices.getProducts({}, 1, 1000);
 
     const brands = await brandServices.getAllBrands();
@@ -285,13 +311,22 @@ export const searchProduct = async (
 
 export const getProduct = async (req: Request, res: Response): Promise<any> => {
   try {
-    const productID = req.params.productID as string | undefined;
-    console.log(productID);
-    if (!productID) {
-      return res.status(400).json({ error: "id for product required" });
+    const slug = req.params.product;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
-
-    const product = await productServices.getProductById(Number(productID));
+    if (!slug) {
+      return res.status(400).json({ error: "slug for product required" });
+    }
+    const prod = await db.Product.findOne({where: {"slug":slug}})
+    if (!prod)
+      {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+    const product = await productServices.getProductById(Number(prod.productID));
     res.status(200).json({ product });
   } catch (err) {
     return res.status(500).json({ error: "Internal Server Error" });
@@ -304,12 +339,14 @@ export const rateProduct = async (
 ): Promise<any> => {
   try {
     const review = req.body.review;
-    const productID = req.params.productID;
-    console.log(req.body);
+    const slug = req.params.product;
     const userID = req.body.userID;
-    const existProduct = await productServices.getProductById(
-      Number(productID)
-    );
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const existProduct = await db.Product.findOne({where: {"slug":slug}})
+
 
     if (!existProduct) {
       return res.status(400).json({ error: "product not found" });
@@ -318,7 +355,7 @@ export const rateProduct = async (
     const options = {
       where: {
         userID: userID,
-        productID: productID,
+        productID: existProduct.productID,
       },
     };
 
@@ -327,7 +364,7 @@ export const rateProduct = async (
       await reviewServices.addReview({
         userID: userID,
         rating: review,
-        productID: productID,
+        productID: existProduct.productID,
       });
 
       return res.status(200).json("Added Review!");
@@ -339,7 +376,7 @@ export const rateProduct = async (
         },
         {
           userID: userID,
-          productID: productID,
+          productID: existProduct.productID,
         }
       );
       return res.status(200).json("Update Rate");
@@ -351,21 +388,29 @@ export const rateProduct = async (
 
 export const getReviews = async (req: Request, res: Response): Promise<any> => {
   try {
-    const productID = req.params.productID;
-
-    if (!productID) {
+    const slug = req.params.product;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    if (!slug) {
       return res.status(400).json({ error: "Invalid Product" });
     }
+    const existProduct = await db.Product.findOne({where: {"slug":slug}})
 
+
+    if (!existProduct) {
+      return res.status(400).json({ error: "product not found" });
+    }
     const count = await db.review.count({
       where: {
-        productID: productID,
+        productID: existProduct.productID,
       },
     });
 
     const options = {
       where: {
-        productID: productID,
+        productID: existProduct.productID,
       },
       include: [
         {
@@ -398,7 +443,6 @@ export const getRelatedProcuts = async (
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
-    console.log("brandName");
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -448,6 +492,53 @@ export const getRelatedProcuts = async (
   } catch (error) {
     // Handle errors and send appropriate error response
     console.log("Error getting related products", error);
+    res.status(error.status).json({ error: error.message });
+  }
+};
+export const getProductsByDiscount = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+
+    //Extract discount from Query
+    const discount = Number(req.query.discount) || 0.15;
+
+    // Extract page and limit from query parameters, with default values if not provided
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    // Define options for querying products
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const options = {
+      where: {
+        discount: {
+          [Op.gte]: discount,
+        }
+      },
+      order: [["title", "ASC"]], // Sorting products by title in ascending order
+    };
+
+    // Count total number of products for the brand
+    const count = await productServices.countProducts(options);
+
+    // Retrieve products based on options, page, and limit
+    const products = await productServices.getProducts(
+      options,
+      Number(page),
+      Number(limit)
+    );
+
+    // Return products and count in the response
+    return res.status(200).json({
+      products,
+      count,
+    });
+  } catch (error) {
+    // Handle errors and send appropriate error response
+    console.log("Error getting products by brand", error);
     res.status(error.status).json({ error: error.message });
   }
 };

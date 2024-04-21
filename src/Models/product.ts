@@ -1,6 +1,6 @@
 import { sequelize } from "../config/dbConfig";
 import { DataTypes, Model } from "sequelize";
-
+import slugify from "slugify";
 interface productAttributes extends Model {
   productID: number;
   title: string;
@@ -12,6 +12,7 @@ interface productAttributes extends Model {
   discount: number;
   arrival: string;
   brand: number;
+  slug: string;
 }
 const Product = sequelize.define<productAttributes>(
   "products",
@@ -55,11 +56,19 @@ const Product = sequelize.define<productAttributes>(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    slug: {
+      type: DataTypes.STRING, // Define slug attribute as a string
+      unique: true, // Ensure uniqueness of slugs
+    },
   },
   {
     timestamps: false,
     tableName: "products",
   }
 );
-
+Product.beforeCreate((product) => {
+  if (product.title) {
+    product.slug = slugify(product.title, { lower: true });
+  }
+});
 export { Product, productAttributes };
