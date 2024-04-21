@@ -318,10 +318,10 @@ export const searchProduct = async (
 export const getProduct = async (req: Request, res: Response): Promise<any> => {
   try {
     const slug = req.params.product;
-    logger.info(`Product slug value${slug}`)
+    logger.info(`Product slug value${slug}`);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error("Product validation failed",errors);
+      logger.error("Product validation failed", errors);
       return res.status(400).json({ errors: errors.array() });
     }
     if (!slug) {
@@ -341,7 +341,7 @@ export const getProduct = async (req: Request, res: Response): Promise<any> => {
     logger.info(`product details ${JSON.stringify(product)}`);
     res.status(200).json({ product });
   } catch (err) {
-    logger.error("Error is getting product Id",err);
+    logger.error("Error is getting product Id", err);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -357,13 +357,13 @@ export const rateProduct = async (
     logger.info(`Review ${review} (${slug}) for user ${userID}`);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error("Review is empty",errors);
+      logger.error("Review is empty", errors);
       return res.status(400).json({ errors: errors.array() });
     }
     const existProduct = await db.Product.findOne({ where: { slug: slug } });
 
     if (!existProduct) {
-      logger.error("product is not exists",errors);
+      logger.error("product is not exists", errors);
       return res.status(400).json({ error: "product not found" });
     }
 
@@ -381,7 +381,7 @@ export const rateProduct = async (
         rating: review,
         productID: existProduct.productID,
       });
-logger.info("Added REview Successfully");
+      logger.info("Added REview Successfully");
       return res.status(200).json("Added Review!");
     } else {
       //existRate
@@ -398,7 +398,7 @@ logger.info("Added REview Successfully");
       return res.status(200).json("Update Rate");
     }
   } catch (error) {
-    logger.error("Internal Server Error",error);
+    logger.error("Internal Server Error", error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -408,14 +408,17 @@ export const getReviews = async (req: Request, res: Response): Promise<any> => {
     const slug = req.params.product;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Get Review is not valid ",errors)
       return res.status(400).json({ errors: errors.array() });
     }
     if (!slug) {
+      logger.error("Invalid Product");
       return res.status(400).json({ error: "Invalid Product" });
     }
     const existProduct = await db.Product.findOne({ where: { slug: slug } });
 
     if (!existProduct) {
+      logger.error("Product not found ");
       return res.status(400).json({ error: "product not found" });
     }
     const count = await db.review.count({
@@ -424,6 +427,7 @@ export const getReviews = async (req: Request, res: Response): Promise<any> => {
       },
     });
 
+    logger.info("Total count of products",count)
     const options = {
       where: {
         productID: existProduct.productID,
@@ -438,13 +442,13 @@ export const getReviews = async (req: Request, res: Response): Promise<any> => {
     };
 
     const reviews = await reviewServices.getReviews(options);
-
+logger.info("Reviews Retrieved successfully",reviews);
     return res.status(200).json({
       totalCount: count,
       reviews: reviews,
     });
   } catch (error) {
-    console.error(error);
+logger.error("Error retrieving  failed ",error);
     return res.status(error.status).json({ error: error.message });
   }
 };
