@@ -91,7 +91,7 @@ logger.info(`Get ProductsByBrand ${slug}`)
     // Find brand by ID in the database
 
     const brand = await db.brand.findOne({where:{"slug": slug}});
-logger.info(`Brand by ID:${brand.brandID}`);
+logger.info(`Brand by ID:${slug}`);
 
     // If brand not found, return 404 response
     if (!brand) {
@@ -454,7 +454,6 @@ export const getRelatedProcuts = async (
     const category = await db.category.findOne({
       where: { name: categoryName },
     });
-    console.log(brand);
     // If brand not found, return 404 response
     if (!brand) {
       return res.status(404).json({

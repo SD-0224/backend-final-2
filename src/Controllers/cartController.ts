@@ -44,7 +44,7 @@ export const cartController = {
       //Checks if the product already exists
       const productItem = await db.Product.findByPk(productId);
       logger.info("Product already exists" + productItem);
-      if (!productItem) {
+      if (!productItem  || productItem.quantity==0 || productItem.quantity < quantity) {
         logger.error(`Product ${productId} not found`);
         return res.status(404).json({ error: "Product not found" });
       }
@@ -57,6 +57,12 @@ export const cartController = {
         logger.error(
           `Cart not found for user ${userId},please create new one `
         );
+      const cartItemExist = db.CartItem.findOne({where:{"productID":productId}})
+      if (cartItemExist)
+        {
+          return res.status(404).json({ error: "Item already added" });
+
+        }
         try {
           cart = await Cart.create({ userID: userId });
           logger.info(`Cart created successfully`);
@@ -65,7 +71,6 @@ export const cartController = {
           return res.status(500).json({ error: "Error creating cart" });
         }
       }
-
       // Create the cart item
       try {
         await db.CartItem.create({
@@ -73,6 +78,10 @@ export const cartController = {
           cartID: cart.cartID,
           productID: productId,
           productQuantity: quantity,
+          productPrice: productItem.price,
+          productTitle: productItem.title,
+          productSubtitle: productItem.subTitle,
+          productDiscount: productItem.discount,
         });
         logger.info("Cart created successfully");
       } catch (error) {
@@ -136,13 +145,13 @@ export const cartController = {
     try {
       const { productId } = req.body;
       logger.info(`Increased quantity of product ${productId}`);
-      const productItem = await Product.findByPk(productId);
+      const productItem = await CartItem.findOne({where:{"productID": productId}});
       if (!productItem) {
         logger.error(`Product ${productId} not found`);
         return res.status(404).json({ error: "Product not found" });
       }
       //Update the quantity by increment 1 ;
-      productItem.quantity += 1;
+      productItem.productQuantity += 1;
       await productItem.save();
       logger.info("product updated successfully");
 
@@ -157,14 +166,14 @@ export const cartController = {
     try {
       const { productId } = req.body;
       logger.info(`Decreased quantity of product ${productId}`);
-      const productItem = await Product.findByPk(productId);
+      const productItem = await CartItem.findOne({where:{"productID": productId}});
       if (!productItem) {
         logger.error(`Product ${productId} not found`);
         return res.status(404).json({ error: "Product not found" });
       }
       //Check when decreasing the quantity of items to cart doesn't go below to 0
-      if (productItem.quantity > 0) {
-        productItem.quantity -= 1;
+      if (productItem.productQuantity > 0) {
+        productItem.productQuantity -= 1;
         //Update the quantity by decrement 1 ;
 
         await productItem.save();
