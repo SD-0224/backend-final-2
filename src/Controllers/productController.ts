@@ -354,13 +354,16 @@ export const rateProduct = async (
     const review = req.body.review;
     const slug = req.params.product;
     const userID = req.body.userID;
+    logger.info(`Review ${review} (${slug}) for user ${userID}`);
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Review is empty",errors);
       return res.status(400).json({ errors: errors.array() });
     }
     const existProduct = await db.Product.findOne({ where: { slug: slug } });
 
     if (!existProduct) {
+      logger.error("product is not exists",errors);
       return res.status(400).json({ error: "product not found" });
     }
 
@@ -378,7 +381,7 @@ export const rateProduct = async (
         rating: review,
         productID: existProduct.productID,
       });
-
+logger.info("Added REview Successfully");
       return res.status(200).json("Added Review!");
     } else {
       //existRate
@@ -391,9 +394,11 @@ export const rateProduct = async (
           productID: existProduct.productID,
         }
       );
+      logger.info("Updated Review successfully");
       return res.status(200).json("Update Rate");
     }
   } catch (error) {
+    logger.error("Internal Server Error",error);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
