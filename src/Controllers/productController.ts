@@ -467,7 +467,7 @@ export const getRelatedProdcuts = async (
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error("Invalid get product value",errors);
+      logger.error("Invalid get product value", errors);
       return res.status(400).json({ errors: errors.array() });
     }
 
@@ -476,7 +476,7 @@ export const getRelatedProdcuts = async (
     const category = await db.category.findOne({
       where: { name: categoryName },
     });
-logger.info(`Brand value ${brand}`);
+    logger.info(`Brand value ${brand}`);
     // If brand not found, return 404 response
     if (!brand) {
       logger.error("Brand not found");
@@ -500,7 +500,7 @@ logger.info(`Brand value ${brand}`);
 
     // Count total number of products for the brand
     const count = await productServices.countProducts(options);
-logger.info("Total number of products",count);
+    logger.info("Total number of products", count);
     // Retrieve products based on options, page, and limit
     const products = await productServices.getProducts(
       options,
@@ -509,14 +509,14 @@ logger.info("Total number of products",count);
     );
 
     // Return products and count in the response
-    logger.info("Total number of products",count);
+    logger.info("Total number of products", count);
     return res.status(200).json({
       products,
       count,
     });
   } catch (error) {
     // Handle errors and send appropriate error response
-    logger.error("Error getting related products", error)
+    logger.error("Error getting related products", error);
     res.status(error.status).json({ error: error.message });
   }
 };
@@ -534,6 +534,7 @@ export const getProductsByDiscount = async (
     // Define options for querying products
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Invalid discount value", errors);
       return res.status(400).json({ errors: errors.array() });
     }
     const options = {
@@ -547,14 +548,14 @@ export const getProductsByDiscount = async (
 
     // Count total number of products for the brand
     const count = await productServices.countProducts(options);
-
+    logger.info("Total products count", count);
     // Retrieve products based on options, page, and limit
     const products = await productServices.getProducts(
       options,
       Number(page),
       Number(limit)
     );
-
+    logger.info("Product retrieved successfully");
     // Return products and count in the response
     return res.status(200).json({
       products,
@@ -562,7 +563,7 @@ export const getProductsByDiscount = async (
     });
   } catch (error) {
     // Handle errors and send appropriate error response
-    console.log("Error getting products by brand", error);
+    logger.error("Error getting products by brand", error);
     res.status(error.status).json({ error: error.message });
   }
 };
