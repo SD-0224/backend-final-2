@@ -16,7 +16,7 @@ import brandRouter from "./Routers/brandRouter"
 import categoryRouter from "./Routers/categoryRouter"
 import cartRouter from './Routers/cartRouter';
 import pino from 'pino';
-import {config} from '../dist/config/pino';
+import {config} from './config/pino';
 const app = express();
 const PORT = process.env.PORT || 3000;
  const logger = pino({
