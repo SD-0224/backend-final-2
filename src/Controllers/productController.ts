@@ -56,11 +56,12 @@ logger.info(`Get the product by category ${cartID}`);
     );
 
     // Return products and count in the response
+    logger.info(`Product retrieved successfully`);
     return res.status(200).json({
       products,
       count,
     });
-    logger.info(`Product retrieved successfully`);
+
   } catch (error) {
     // Handle errors and send appropriate error response
     logger.error("Error getting products by cat", error)
@@ -74,22 +75,24 @@ export const getProductsByBrand = async (
 ): Promise<any> => {
   try {
     // Extract brand ID from route parameter
-    const branID = req.params.brand;
-
+    const brandID = req.params.brand;
+logger.info(`Get ProductsByBrand ${brandID}`)
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Product By Brand Validation returned error",errors);
       return res.status(400).json({ errors: errors.array() });
     }
 
     // Find brand by ID in the database
-    const brand = await db.brand.findByPk(branID);
-
+    const brand = await db.brand.findByPk(brandID);
+logger.info(`Brand by ID:${brand.brandID}`);
     // If brand not found, return 404 response
     if (!brand) {
+      logger.error("Brand not found");
       return res.status(404).json({
         message: "Brand not found",
       });
@@ -97,13 +100,14 @@ export const getProductsByBrand = async (
 
     // Define options for querying products
     const options = {
-      where: { brandID: branID },
+      where: { brandID: brandID },
       order: [["title", "ASC"]], // Sorting products by title in ascending order
     };
 
     // Count total number of products for the brand
     const count = await productServices.countProducts(options);
 
+    logger.info("Total products count"+ count);
     // Retrieve products based on options, page, and limit
     const products = await productServices.getProducts(
       options,
@@ -112,13 +116,14 @@ export const getProductsByBrand = async (
     );
 
     // Return products and count in the response
+    logger.info("Get Products By brand retrieved successfully",products);
     return res.status(200).json({
       products,
       count,
     });
   } catch (error) {
     // Handle errors and send appropriate error response
-    console.log("Error getting products by brand", error);
+    logger.error("Error getting products by brand", error)
     res.status(error.status).json({ error: error.message });
   }
 };
