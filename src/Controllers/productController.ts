@@ -226,12 +226,14 @@ export const getProductsHandpicked = async (
     const limit = req.query.limit || 10;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Products Handpicked Validation Error",errors);
       return res.status(400).json({ errors: errors.array() });
     }
     const category = await db.category.findOne({where:{"slug": slug}});
 
     // If category not found, return 404 response
     if (!category) {
+      logger.error("Category not found",errors);
       return res.status(404).json({
         message: "Category not found",
       });
@@ -250,18 +252,19 @@ export const getProductsHandpicked = async (
       having: sequelize.literal(`avgReview >= 4.5 and price <100`),
     };
     const count = await productServices.countProducts(options);
-
+logger.info("The total number of products", count);
     const products = await productServices.getProducts(
       options,
       Number(page),
       Number(limit)
     );
+    logger.info("Retrieved all the products successfully");
     return res.status(200).json({
       products,
       count,
     });
   } catch (error) {
-    console.log("Error getting products by handpicked", error);
+    logger.error("Error getting products by handpicked", error)
     res.status(error.status).json({ error: error.message });
   }
 };
