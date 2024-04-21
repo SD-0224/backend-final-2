@@ -135,24 +135,31 @@ export const cartController = {
   increasedQty: async (req: Request, res: Response) => {
     try {
       const { productId } = req.body;
+      logger.info(`Increased quantity of product ${productId}`);
       const productItem = await Product.findByPk(productId);
       if (!productItem) {
+        logger.error(`Product ${productId} not found`);
         return res.status(404).json({ error: "Product not found" });
       }
       //Update the quantity by increment 1 ;
       productItem.quantity += 1;
       await productItem.save();
+      logger.info("product updated successfully");
+
       res.status(200).json({ message: "product updated successfully" });
     } catch (error) {
+      logger.error("Internal server Error", error);
+
       res.json({ error: "Internal server Error" });
     }
-    // res.send({ message: "increased quantity of items to cart " });
   },
   decreasedQty: async (req: Request, res: Response) => {
     try {
       const { productId } = req.body;
+      logger.info(`Decreased quantity of product ${productId}`);
       const productItem = await Product.findByPk(productId);
       if (!productItem) {
+        logger.error(`Product ${productId} not found`);
         return res.status(404).json({ error: "Product not found" });
       }
       //Check when decreasing the quantity of items to cart doesn't go below to 0
@@ -161,10 +168,12 @@ export const cartController = {
         //Update the quantity by decrement 1 ;
 
         await productItem.save();
+        logger.info("product updated successfully");
         res.status(200).json({ message: "product updated successfully" });
       }
     } catch (error) {
-      res.json({ error: "Internal server Error" });
+      logger.error("Internal server Error", error);
+      return res.json({ error: "Internal server Error" });
     }
   },
 };
