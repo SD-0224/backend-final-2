@@ -8,14 +8,16 @@ import { validationResult } from "express-validator";
 import { Op } from "sequelize";
 import brandServices from "../Services/brandServices";
 import reviewServices from "../Services/reviewServices";
-
+import {logger} from "../config/pino";
 export const getProductsByCategory = async (
   req: Request,
   res: Response
 ): Promise<any> => {
   try {
     // Extract category ID from route parameter
-    const slug = req.params.category;
+
+ const slug = req.params.category;
+logger.info(`Get the product by category ${slug}`);
 
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
@@ -24,14 +26,14 @@ export const getProductsByCategory = async (
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Validation error occurred  ",errors);
       return res.status(400).json({ errors: errors.array() });
     }
-
     // Find category by ID in the database
     const category = await db.category.findOne({where:{"slug": slug}});
-
     // If category not found, return 404 response
     if (!category) {
+      logger.error("Category not found");
       return res.status(404).json({
         message: "Category not found",
       });
@@ -54,13 +56,15 @@ export const getProductsByCategory = async (
     );
 
     // Return products and count in the response
+    logger.info(`Product retrieved successfully`);
     return res.status(200).json({
       products,
       count,
     });
+
   } catch (error) {
     // Handle errors and send appropriate error response
-    console.log("Error getting products by cat", error);
+    logger.error("Error getting products by cat", error)
     res.status(error.status).json({ error: error.message });
   }
 };
@@ -71,22 +75,27 @@ export const getProductsByBrand = async (
 ): Promise<any> => {
   try {
     // Extract brand ID from route parameter
-    const slug = req.params.brand;
 
+    const slug = req.params.brand;
+logger.info(`Get ProductsByBrand ${slug}`)
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Product By Brand Validation returned error",errors);
       return res.status(400).json({ errors: errors.array() });
     }
 
     // Find brand by ID in the database
+
     const brand = await db.brand.findOne({where:{"slug": slug}});
+logger.info(`Brand by ID:${brand.brandID}`);
 
     // If brand not found, return 404 response
     if (!brand) {
+      logger.error("Brand not found");
       return res.status(404).json({
         message: "Brand not found",
       });
@@ -101,6 +110,7 @@ export const getProductsByBrand = async (
     // Count total number of products for the brand
     const count = await productServices.countProducts(options);
 
+    logger.info("Total products count"+ count);
     // Retrieve products based on options, page, and limit
     const products = await productServices.getProducts(
       options,
@@ -109,13 +119,14 @@ export const getProductsByBrand = async (
     );
 
     // Return products and count in the response
+    logger.info("Get Products By brand retrieved successfully",products);
     return res.status(200).json({
       products,
       count,
     });
   } catch (error) {
     // Handle errors and send appropriate error response
-    console.log("Error getting products by brand", error);
+    logger.error("Error getting products by brand", error)
     res.status(error.status).json({ error: error.message });
   }
 };
@@ -141,6 +152,7 @@ export const getProductsByArrival = async (
     };
     // Count total number of products for the brand
     const count = await productServices.countProducts(options);
+    logger.debug(`Count of Products by arrival: ${count}`);
     // Retrieve products based on options, page, and limit
     const products = await productServices.getProducts(
       options,
@@ -148,6 +160,8 @@ export const getProductsByArrival = async (
       Number(limit)
     );
 
+    //Log the retrieved products
+    logger.debug(`Products retrieved :${products}`);
     // Return products and count in the response
     return res.status(200).json({
       products,
@@ -155,8 +169,7 @@ export const getProductsByArrival = async (
     });
   } catch (error) {
     // Handle errors and send appropriate error response
-
-    console.log("Error getting products by trendy", error);
+    logger.error("Error getting products by trendy", error)
     res.status(error.status).json({ error: error.message });
   }
 };
