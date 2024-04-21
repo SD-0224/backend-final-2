@@ -21,7 +21,6 @@ export const cartController = {
         res.status(404).json({ error: "Cart is empty" });
       }
       res.json(cartItems);
-      // res.send({ message: `Getting ${userId} from cart` });
     } catch (error) {
       console.log("Error fetching the catItems", error);
       res.status(500).json({ error: "Internal server error" });
