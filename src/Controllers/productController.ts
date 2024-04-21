@@ -8,7 +8,7 @@ import { validationResult } from "express-validator";
 import { Op } from "sequelize";
 import brandServices from "../Services/brandServices";
 import reviewServices from "../Services/reviewServices";
-import {logger} from "../config/pino";
+import { logger } from "../config/pino";
 export const getProductsByCategory = async (
   req: Request,
   res: Response
@@ -16,8 +16,8 @@ export const getProductsByCategory = async (
   try {
     // Extract category ID from route parameter
 
- const slug = req.params.category;
-logger.info(`Get the product by category ${slug}`);
+    const slug = req.params.category;
+    logger.info(`Get the product by category ${slug}`);
 
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
@@ -26,11 +26,11 @@ logger.info(`Get the product by category ${slug}`);
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error("Validation error occurred  ",errors);
+      logger.error("Validation error occurred  ", errors);
       return res.status(400).json({ errors: errors.array() });
     }
     // Find category by ID in the database
-    const category = await db.category.findOne({where:{"slug": slug}});
+    const category = await db.category.findOne({ where: { slug: slug } });
     // If category not found, return 404 response
     if (!category) {
       logger.error("Category not found");
@@ -61,10 +61,9 @@ logger.info(`Get the product by category ${slug}`);
       products,
       count,
     });
-
   } catch (error) {
     // Handle errors and send appropriate error response
-    logger.error("Error getting products by cat", error)
+    logger.error("Error getting products by cat", error);
     res.status(error.status).json({ error: error.message });
   }
 };
@@ -77,21 +76,21 @@ export const getProductsByBrand = async (
     // Extract brand ID from route parameter
 
     const slug = req.params.brand;
-logger.info(`Get ProductsByBrand ${slug}`)
+    logger.info(`Get ProductsByBrand ${slug}`);
     // Extract page and limit from query parameters, with default values if not provided
     const page = req.query.page || 1;
     const limit = req.query.limit || 10;
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error("Product By Brand Validation returned error",errors);
+      logger.error("Product By Brand Validation returned error", errors);
       return res.status(400).json({ errors: errors.array() });
     }
 
     // Find brand by ID in the database
 
-    const brand = await db.brand.findOne({where:{"slug": slug}});
-logger.info(`Brand by ID:${brand.brandID}`);
+    const brand = await db.brand.findOne({ where: { slug: slug } });
+    logger.info(`Brand by ID:${brand.brandID}`);
 
     // If brand not found, return 404 response
     if (!brand) {
@@ -110,7 +109,7 @@ logger.info(`Brand by ID:${brand.brandID}`);
     // Count total number of products for the brand
     const count = await productServices.countProducts(options);
 
-    logger.info("Total products count"+ count);
+    logger.info("Total products count" + count);
     // Retrieve products based on options, page, and limit
     const products = await productServices.getProducts(
       options,
@@ -119,14 +118,14 @@ logger.info(`Brand by ID:${brand.brandID}`);
     );
 
     // Return products and count in the response
-    logger.info("Get Products By brand retrieved successfully",products);
+    logger.info("Get Products By brand retrieved successfully", products);
     return res.status(200).json({
       products,
       count,
     });
   } catch (error) {
     // Handle errors and send appropriate error response
-    logger.error("Error getting products by brand", error)
+    logger.error("Error getting products by brand", error);
     res.status(error.status).json({ error: error.message });
   }
 };
@@ -169,7 +168,7 @@ export const getProductsByArrival = async (
     });
   } catch (error) {
     // Handle errors and send appropriate error response
-    logger.error("Error getting products by trendy", error)
+    logger.error("Error getting products by trendy", error);
     res.status(error.status).json({ error: error.message });
   }
 };
@@ -198,23 +197,22 @@ export const getProductsByTrendy = async (
       having: sequelize.literal(`avgReview >= 4.5`),
     };
     const count = await productServices.countProducts(options);
-logger.info("Total product count"+ count);
+    logger.info("Total product count" + count);
     const products = await productServices.getProducts(
       options,
       Number(page),
       Number(limit)
     );
-    logger.info("Total products retrieved by trendy successfully",products);
+    logger.info("Total products retrieved by trendy successfully", products);
     return res.status(200).json({
       products,
       count,
     });
   } catch (error) {
-    logger.error("Error getting products by trendy", error)
+    logger.error("Error getting products by trendy", error);
     res.status(error.status).json({ error: error.message });
   }
 };
-
 
 export const getProductsHandpicked = async (
   req: Request,
@@ -226,14 +224,14 @@ export const getProductsHandpicked = async (
     const limit = req.query.limit || 10;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error("Products Handpicked Validation Error",errors);
+      logger.error("Products Handpicked Validation Error", errors);
       return res.status(400).json({ errors: errors.array() });
     }
-    const category = await db.category.findOne({where:{"slug": slug}});
+    const category = await db.category.findOne({ where: { slug: slug } });
 
     // If category not found, return 404 response
     if (!category) {
-      logger.error("Category not found",errors);
+      logger.error("Category not found", errors);
       return res.status(404).json({
         message: "Category not found",
       });
@@ -252,7 +250,7 @@ export const getProductsHandpicked = async (
       having: sequelize.literal(`avgReview >= 4.5 and price <100`),
     };
     const count = await productServices.countProducts(options);
-logger.info("The total number of products", count);
+    logger.info("The total number of products", count);
     const products = await productServices.getProducts(
       options,
       Number(page),
@@ -264,7 +262,7 @@ logger.info("The total number of products", count);
       count,
     });
   } catch (error) {
-    logger.error("Error getting products by handpicked", error)
+    logger.error("Error getting products by handpicked", error);
     res.status(error.status).json({ error: error.message });
   }
 };
@@ -279,13 +277,13 @@ export const searchProduct = async (
     const limit = req.query.limit || 10;
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error("Invalid search value",errors);
+      logger.error("Invalid search value", errors);
       return res.status(400).json({ errors: errors.array() });
     }
     const products = await productServices.getProducts({}, 1, 1000);
-    logger.info("Product retrieved successfully",products);
+    logger.info("Product retrieved successfully", products);
     const brands = await brandServices.getAllBrands();
-    logger.info("Brand retrieved successfully",brands);
+    logger.info("Brand retrieved successfully", brands);
     const combinedData = [
       ...products,
       ...brands.map((brand) => ({
@@ -302,7 +300,7 @@ export const searchProduct = async (
       }
     );
     const result = searcher.search(searchInput, { page: page, limit: limit });
-logger.info("search value result",result);
+    logger.info("search value result", result);
     const startIndex = (Number(page) - 1) * Number(limit);
     const endIndex = Number(page) * Number(limit);
     const paginatedResult = result.slice(startIndex, endIndex);
@@ -312,7 +310,7 @@ logger.info("search value result",result);
       count,
     });
   } catch (err) {
-    logger.error("Internal Server Error",err);
+    logger.error("Internal Server Error", err);
     res.status(500).send({ error: "Internal Server Error" });
   }
 };
@@ -320,23 +318,30 @@ logger.info("search value result",result);
 export const getProduct = async (req: Request, res: Response): Promise<any> => {
   try {
     const slug = req.params.product;
+    logger.info(`Product slug value${slug}`)
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      logger.error("Product validation failed",errors);
       return res.status(400).json({ errors: errors.array() });
     }
     if (!slug) {
+      logger.error("product slug not found");
       return res.status(400).json({ error: "slug for product required" });
     }
-    const prod = await db.Product.findOne({where: {"slug":slug}})
-    if (!prod)
-      {
-        return res.status(404).json({
-          message: "Product not found",
-        });
-      }
-    const product = await productServices.getProductById(Number(prod.productID));
+    const prod = await db.Product.findOne({ where: { slug: slug } });
+    if (!prod) {
+      logger.info("product not found");
+      return res.status(404).json({
+        message: "Product not found",
+      });
+    }
+    const product = await productServices.getProductById(
+      Number(prod.productID)
+    );
+    logger.info(`product details ${JSON.stringify(product)}`);
     res.status(200).json({ product });
   } catch (err) {
+    logger.error("Error is getting product Id",err);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
@@ -353,8 +358,7 @@ export const rateProduct = async (
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const existProduct = await db.Product.findOne({where: {"slug":slug}})
-
+    const existProduct = await db.Product.findOne({ where: { slug: slug } });
 
     if (!existProduct) {
       return res.status(400).json({ error: "product not found" });
@@ -404,8 +408,7 @@ export const getReviews = async (req: Request, res: Response): Promise<any> => {
     if (!slug) {
       return res.status(400).json({ error: "Invalid Product" });
     }
-    const existProduct = await db.Product.findOne({where: {"slug":slug}})
-
+    const existProduct = await db.Product.findOne({ where: { slug: slug } });
 
     if (!existProduct) {
       return res.status(400).json({ error: "product not found" });
@@ -508,7 +511,6 @@ export const getProductsByDiscount = async (
   res: Response
 ): Promise<any> => {
   try {
-
     //Extract discount from Query
     const discount = Number(req.query.discount) || 0.15;
 
@@ -524,7 +526,7 @@ export const getProductsByDiscount = async (
       where: {
         discount: {
           [Op.gte]: discount,
-        }
+        },
       },
       order: [["title", "ASC"]], // Sorting products by title in ascending order
     };
