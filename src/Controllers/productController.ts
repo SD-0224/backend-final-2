@@ -8,7 +8,6 @@ import { validationResult } from "express-validator";
 import { Op } from "sequelize";
 import brandServices from "../Services/brandServices";
 import reviewServices from "../Services/reviewServices";
-
 export const getProductsByCategory = async (
   req: Request,
   res: Response
