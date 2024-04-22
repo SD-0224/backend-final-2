@@ -99,7 +99,7 @@ export const register = async (req: any, res: any) => {
 export const loginUser = async (req: Request, res: Response) => {
   try {
     const { password, email } = req.body;
-   logger.info(`Attempting login user by an email${email}`)
+    logger.info(`Attempting login user by an email${email}`);
 
     let user;
     if (validateEmail(email)) {
@@ -109,22 +109,20 @@ export const loginUser = async (req: Request, res: Response) => {
       return res.status(400).json({ error: "Invalid email or username" });
     }
 
-
     if (!user) {
-      logger.error("User not found" );
+      logger.error("User not found");
       return res.status(404).json({ error: "User not found" });
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
 
     if (!isPasswordCorrect) {
       logger.error("Wrong username or password!");
       return res.status(400).json({ error: "Wrong username or password!" });
     }
 
-logger.info("successful Login ")
-const { password: _, ...userWithoutPassword } = user.toJSON();
+    logger.info("successful Login ");
+    const { password: _, ...userWithoutPassword } = user.toJSON();
 
     const token: string = jwt.sign(
       { userId: user._id, username: user.username },
@@ -133,7 +131,7 @@ const { password: _, ...userWithoutPassword } = user.toJSON();
     );
     console.log("secretKey", secretKey);
     res.cookie("token", token, { httpOnly: true });
-    res.status(200).json({ user:userWithoutPassword, token });
+    res.status(200).json({ user: userWithoutPassword, token });
   } catch (error) {
     logger.error("Error during login:");
     res.status(500).json({ error: "Internal server error" });
