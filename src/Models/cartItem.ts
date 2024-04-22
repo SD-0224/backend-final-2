@@ -4,7 +4,6 @@ import { Cart } from "./cart"; // Import the Cart model
 
 interface cartItemAttributes extends Model {
   cartItemID: number;
-  userID: number;
   cartID: number; 
   productID: number;
   productQuantity: number;
@@ -13,7 +12,6 @@ interface cartItemAttributes extends Model {
   subTotal:number;
   productTitle: string;
   productSubtitle: string;
-  isOrdered: boolean;
 }
 
 const CartItem = sequelize.define<cartItemAttributes>('cartItems', {
@@ -21,10 +19,6 @@ const CartItem = sequelize.define<cartItemAttributes>('cartItems', {
     type: DataTypes.INTEGER,
     primaryKey: true,
     autoIncrement: true,
-  },
-  userID: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
   },
   cartID: {
     type: DataTypes.INTEGER,
@@ -58,11 +52,6 @@ const CartItem = sequelize.define<cartItemAttributes>('cartItems', {
   subTotal: {
     type: DataTypes.FLOAT
   },
-  isOrdered: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    defaultValue: false
-  }
 }, {
   timestamps: false,
   tableName: 'cartItems'

@@ -8,5 +8,4 @@ export const CartData = [
   { userID: 7, productID: 7 },
   { userID: 8, productID: 8 },
   { userID: 9, productID: 9 },
-  { userID: 10, productID: 10 },
 ];

@@ -25,7 +25,9 @@ export const createOrder = async (req: Request, res: Response) => {
       }, transaction)
     }
     const addressID = existingAddress.addressID;
-    const orderItems = await db.CartItem.findAll({where:{"userID":userID}})
+    const cart = await db.Cart.findOne({ where: { userID: userID } });
+
+    const orderItems = await db.CartItem.findAll({where:{cartID: cart.cartID}})
     if(!orderItems){
         return res.status(400).json({error: "Invalid Input"});
       }
@@ -62,7 +64,7 @@ export const createOrder = async (req: Request, res: Response) => {
         await productServices.updateProduct(productID, newQuantity, transaction)  
       }))
       await db.CartItem.destroy({
-        where: { userID: userID },
+        where: { cartID: cart.cartID },
       });
       await transaction.commit()
     res.status(200).json(newOrder);

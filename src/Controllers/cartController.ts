@@ -5,6 +5,7 @@ import { sequelize } from "../config/dbConfig";
 import { Request, Response } from "express";
 import { Product } from "../Models/product";
 import { logger } from "../config/pino";
+import cartServices from "../Services/cartServices";
 //Get cart by userId and create a new cart objet
 export const cartController = {
   getCartByUserId: async (req: Request, res: Response) => {
@@ -12,17 +13,16 @@ export const cartController = {
       let userId = req.params.userId;
       logger.info(`Request received to get cart for ${userId} `);
 
-      const cartItems = await CartItem.findAll({
-        where: { userID: userId },
-        include: [{ model: Product }],
-      });
+      const cartItems = await cartServices.getCartByUserId(Number(userId));
       logger.info(`Cart Item retrieved successfully for ${userId} `);
 
       if (cartItems.length === 0) {
         logger.info(`Cart is empty for user ${userId}`);
-        return res.status(404).json({ error: "Cart is empty" });
+        return res
+          .status(200)
+          .json({ message: "Cart is empty", cartItems: [] });
       }
-      res.json(cartItems);
+      res.status(200).json(cartItems);
     } catch (error) {
       logger.error("Error fetching the catItems");
       res.status(500).json({ error: "Internal server error" });
@@ -44,7 +44,11 @@ export const cartController = {
       //Checks if the product already exists
       const productItem = await db.Product.findByPk(productId);
       logger.info("Product already exists" + productItem);
-      if (!productItem  || productItem.quantity==0 || productItem.quantity < quantity) {
+      if (
+        !productItem ||
+        productItem.quantity == 0 ||
+        productItem.quantity < quantity
+      ) {
         logger.error(`Product ${productId} not found`);
         return res.status(404).json({ error: "Product not found" });
       }
@@ -54,15 +58,6 @@ export const cartController = {
       let cart = await Cart.findOne({ where: { userID: userId } });
 
       if (!cart) {
-        logger.error(
-          `Cart not found for user ${userId},please create new one `
-        );
-      const cartItemExist = db.CartItem.findOne({where:{"productID":productId}})
-      if (cartItemExist)
-        {
-          return res.status(404).json({ error: "Item already added" });
-
-        }
         try {
           cart = await Cart.create({ userID: userId });
           logger.info(`Cart created successfully`);
@@ -71,9 +66,14 @@ export const cartController = {
           return res.status(500).json({ error: "Error creating cart" });
         }
       }
-      // Create the cart item
+      const cartItemExist = await db.CartItem.findOne({
+        where: { cartID: cart.cartID, productID: productId },
+      });
+      if (cartItemExist) {
+        return res.status(404).json({ error: "Item already added" });
+      }
       try {
-        await db.CartItem.create({
+        const cartItem = await db.CartItem.create({
           userID: cart.userID,
           cartID: cart.cartID,
           productID: productId,
@@ -84,24 +84,17 @@ export const cartController = {
           productDiscount: productItem.discount,
         });
         logger.info("Cart created successfully");
+        res.status(200).json({
+          message: `Adding ${productId} to cart for the user ${userId}`,
+          cartItem: cartItem,
+        });
+        logger.info(`Adding ${productId} to cart for the user ${userId}`);
       } catch (error) {
         logger.error(
           `Error creating cart item for user ${userId}: ${error.message}`
         );
         return res.status(500).json({ error: "Error creating cart item" });
       }
-
-      res.json({
-        message: `Adding ${productId} to cart for the user ${userId}`,
-        product: {
-          title: productItem.title,
-          subtle: productItem.subTitle,
-          quantity: productItem.quantity,
-          price: productItem.price,
-          subtotal: productItem.price * quantity,
-        },
-      });
-      logger.info(`Adding ${productId} to cart for the user ${userId}`);
     } catch (error) {
       logger.error("Internal server Error", error);
       res.status(500).json({ error: "Internal server Error" });
@@ -110,9 +103,19 @@ export const cartController = {
   deleteItemsFromCart: async (req: Request, res: Response) => {
     try {
       const { userId, productId } = req.body;
+      let cart = await db.Cart.findOne({ where: { userID: userId } });
+      if (!cart) {
+        logger.error(`Cart not found for user ${userId},please add items `);
+        return res.status(404).json({ error: "Cart not found" });
+      }
       logger.info(`deleting ${productId} from ${userId}`);
-      await CartItem.destroy({ where: { userId, productId } });
+      const deletedItem = await CartItem.destroy({
+        where: { cartID: cart.cartID, productID: productId },
+      });
       logger.info(`Deleted ${productId} from ${userId} successfully `);
+      if (!deletedItem) {
+        return res.json({ message: `Item does not exist, no changes` });
+      }
       return res.json({ message: `Item deleted from the  cart for ${userId}` });
     } catch (error) {
       logger.error("Error deleting item from the cart", error);
@@ -122,20 +125,21 @@ export const cartController = {
   clearCart: async (req: Request, res: Response) => {
     try {
       let userId = req.body.userId;
+      let cart = await db.Cart.findOne({ where: { userID: userId } });
+      if (!cart) {
+        logger.error(`Cart not found for user ${userId},please add items `);
+        return res.status(404).json({ error: "Cart not found" });
+      }
       logger.info(`Clearing ${userId} from the cart`);
       const deletedCount = await CartItem.destroy({
-        where: { userID: userId },
+        where: { cartID: cart.cartID },
       });
       logger.info(`Deleted ${deletedCount} from the cart`);
-      if (deletedCount > 0) {
-        logger.info(`Cart cleared successfully for user${userId}`);
-        return res.json({
-          message: `Cart cleared successfully for user${userId}`,
-        });
-      } else {
-        logger.error(`There is no ${userId} found in the cart`);
-        return res.json({ message: ` No cartItem found  for ${userId}` });
-      }
+
+      logger.info(`Cart cleared successfully for user${userId}`);
+      return res.json({
+        message: `Cart cleared successfully for user${userId}`,
+      });
     } catch (error) {
       logger.error("Internal server Error", error);
       res.json({ error: "Internal server Error" });
@@ -143,9 +147,17 @@ export const cartController = {
   },
   increasedQty: async (req: Request, res: Response) => {
     try {
+      const userId = req.params.user;
+      let cart = await db.Cart.findOne({ where: { userID: userId } });
+      if (!cart) {
+        logger.error(`Cart not found for user ${userId},please add items `);
+        return res.status(404).json({ error: "Cart not found" });
+      }
       const { productId } = req.body;
       logger.info(`Increased quantity of product ${productId}`);
-      const productItem = await CartItem.findOne({where:{"productID": productId}});
+      const productItem = await CartItem.findOne({
+        where: { productID: productId, cartID: cart.cartID },
+      });
       if (!productItem) {
         logger.error(`Product ${productId} not found`);
         return res.status(404).json({ error: "Product not found" });
@@ -165,8 +177,16 @@ export const cartController = {
   decreasedQty: async (req: Request, res: Response) => {
     try {
       const { productId } = req.body;
+      const userId = req.params.user;
+      let cart = await db.Cart.findOne({ where: { userID: userId } });
+      if (!cart) {
+        logger.error(`Cart not found for user ${userId},please add items `);
+        return res.status(404).json({ error: "Cart not found" });
+      }
       logger.info(`Decreased quantity of product ${productId}`);
-      const productItem = await CartItem.findOne({where:{"productID": productId}});
+      const productItem = await CartItem.findOne({
+        where: { productID: productId, cartID: cart.cartID },
+      });
       if (!productItem) {
         logger.error(`Product ${productId} not found`);
         return res.status(404).json({ error: "Product not found" });
@@ -180,6 +200,37 @@ export const cartController = {
         logger.info("product updated successfully");
         res.status(200).json({ message: "product updated successfully" });
       }
+    } catch (error) {
+      logger.error("Internal server Error", error);
+      return res.json({ error: "Internal server Error" });
+    }
+  },
+
+  syncCart: async (req: Request, res: Response) => {
+    const userId = req.params.user;
+    const cartItems = req.body.cartItems;
+
+    try {
+      let cart = await db.Cart.findOne({ where: { userID: userId } });
+      if (!cart) {
+        try {
+          cart = await Cart.create({ userID: userId });
+
+          logger.info(`Cart created successfully`);
+        } catch (error) {
+          logger.error("Error creating cart for the user");
+          return res.status(500).json({ error: "Error creating cart" });
+        }
+        const addedItems = await cartServices.syncCart(cart.cartID, cartItems);
+        res
+          .status(200)
+          .json({
+            message: "Added items successfully with new cart",
+            addedItems: addedItems,
+          });
+      }
+
+      res.status(200).json({ message: "User already has a cart" });
     } catch (error) {
       logger.error("Internal server Error", error);
       return res.json({ error: "Internal server Error" });
