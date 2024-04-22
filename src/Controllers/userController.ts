@@ -1,40 +1,54 @@
 import { User } from "../Models/user";
 import bcrypt, { genSaltSync } from "bcrypt";
 import generateFakeSecretKey from "../Utils/helper";
-import { validateEmail, validatePassword,validateFirstName,validateLastName ,validatePhoneNumber} from "../Validators/UserHandler";
+import {
+  validateEmail,
+  validatePassword,
+  validateFirstName,
+  validateLastName,
+  validatePhoneNumber,
+} from "../Validators/UserHandler";
 import { Request, Response } from "express";
-import{logger} from "../config/pino";
+import { logger } from "../config/pino";
 const jwt = require("jsonwebtoken");
 //Generate fake secret key
 const secretKey = generateFakeSecretKey();
 
 export const registerNewUser = async (userData: any) => {
-  const { email, password, googleId,phoneNumber,lastName,firstName } = userData;
+  const { email, password, googleId, phoneNumber, lastName, firstName } =
+    userData;
 
   try {
     if (!email || email.trim() === "") {
+      logger.error("Email is required");
       return { error: "Email is required" };
     }
 
     if (!password || password.trim() === "") {
+      logger.error("Password is required");
       return { error: "Password is required" };
     }
 
     if (!validateEmail(email)) {
+      logger.error("Invalid email");
       return { error: "Invalid email" };
     }
 
     if (!validatePassword(password)) {
+      logger.error("Invalid password");
       return { error: "Invalid password" };
     }
-    if(!validateFirstName(firstName)){
-      return {error:"Invalid First Name"};
+    if (!validateFirstName(firstName)) {
+      logger.error("Invalid First Name");
+      return { error: "Invalid First Name" };
     }
-    if(!validateLastName(lastName)){
-      return {error:"Invalid last name"};
+    if (!validateLastName(lastName)) {
+      logger.error("Invalid last name");
+      return { error: "Invalid last name" };
     }
-    if(!validatePhoneNumber(phoneNumber)){
-return {error:"Invalid phone Number"}
+    if (!validatePhoneNumber(phoneNumber)) {
+      logger.error("Invalid phone Number");
+      return { error: "Invalid phone Number" };
     }
 
     // Hashing the password before storing in the db
@@ -45,16 +59,16 @@ return {error:"Invalid phone Number"}
     const newUser = await User.create({
       email: email || "",
       password: hash,
-      firstName:firstName,
-      lastName:lastName,
-      phoneNumber:phoneNumber,
+      firstName: firstName,
+      lastName: lastName,
+      phoneNumber: phoneNumber,
       googleId: googleId || null,
     });
 
     return newUser;
   } catch (error) {
-    console.error("Error while registering new user:", error);
-    return null;
+    logger.error("Error while registering new user:");
+    return userData.json({ error: "Error while registering new user:" });
   }
 };
 
@@ -62,14 +76,16 @@ return {error:"Invalid phone Number"}
 export const register = async (req: any, res: any) => {
   try {
     const newUser = await registerNewUser(req.body);
+    logger.info(`New user:${newUser.email} with ${newUser.password}`);
     if (newUser) {
-      // res.render("signUp");
+      logger.info("New user registration successfully ")
       res.status(201).json(newUser);
     } else {
+      logger.error("New user registration  failed")
       res.status(500).json({ error: "Failed to register user" });
     }
   } catch (error) {
-    console.error("Error registering user:", error);
+    logger.error("Error registering user:", error)
     res.status(500).json({ error: "Internal server error" });
   }
 };
