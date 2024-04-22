@@ -21,7 +21,7 @@ export const userData = [
     firstName: "Gerda",
     lastName: "Tenny",
     email: "gtenny2@salon.com",
-    password: 'heyrJHVS3202.}%"Q$,!l!HZ1.GGjjZ',
+    password: 'erTY58&*',
     phoneNumber: "187-945-9811",
     image: "https://robohash.org/quiinconsequatur.png?size=50x50&set=set1",
     dateOfBirth: "1/2/2024",

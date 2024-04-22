@@ -125,9 +125,9 @@ export const loginUser = async (req: Request, res: Response) => {
     const { password: _, ...userWithoutPassword } = user.toJSON();
 
     const token: string = jwt.sign(
-      { userId: user._id, username: user.username },
+      { userId: user.userID }, 
       secretKey,
-      { expiresIn: "1h" }
+      { expiresIn: "1d" }
     );
     console.log("secretKey", secretKey);
     res.cookie("token", token, { httpOnly: true });
@@ -140,20 +140,22 @@ export const loginUser = async (req: Request, res: Response) => {
 
 //Middleware to verify JWT token
 
-module.exports.verifyToken = async (req, res, next) => {
+export const verifyToken = async (req, res, next) => {
   const token = req.cookies.token;
-  console.log("value of token");
+  // console.log("value of token");
+  logger.info("token",token);
   if (!token) {
-    return res.status(401).json({ error: "Unauthorized: Token is missing" });
+      return res.status(401).json({ error: "Unauthorized: Token is missing" });
   }
   try {
-    const decoded = jwt.verify(token, secretKey);
-    req.user = decoded;
-    next();
+      const decoded = jwt.verify(token, secretKey);
+      req.userID = decoded.userId; // Set req.userID to decoded userId
+      next();
   } catch (error) {
-    return res.status(401).json({ error: "Unauthorized: Invalid token" });
+      return res.status(401).json({ error: "Unauthorized: Invalid token" });
   }
 };
+
 
 export const logOutUser=async(req:Request,res:Response)=>{
   try {

@@ -1,10 +1,10 @@
 import express from "express";
 import { cartController } from "../Controllers/cartController";
-
+import {verifyToken} from "../Controllers/userController";
 const cartRouter = express.Router();
 
 cartRouter.get("/:userId", cartController.getCartByUserId);
-cartRouter.post("/add/:userID/:productID", cartController.addItemsToCart);
+cartRouter.post("/add/:userID/:productID", verifyToken, cartController.addItemsToCart);
 cartRouter.delete("/", cartController.deleteItemsFromCart);
 cartRouter.delete("/clear", cartController.clearCart);
 cartRouter.put("/inc/:user", cartController.increasedQty);

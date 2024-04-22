@@ -31,6 +31,7 @@ const PORT = process.env.PORT || 3000;
   timestamp:pino.stdTimeFunctions.isoTime,
  });
 logger.info("Application started");
+
 const test = db.address;
 app.use(cors());
 
@@ -46,6 +47,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }));
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
 
 app.set('view engine', "ejs");
 app.set('views', path.join(__dirname, '../src/views'));
