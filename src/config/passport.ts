@@ -2,20 +2,20 @@ import passport from "passport";
 import { User } from "../Models/user";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { registerNewUser } from "../Controllers/userController";
+import {logger} from "../config/pino";
 import dotenv from 'dotenv';
 dotenv.config();
 passport.serializeUser((user, done) => {
-  console.log("Use serialization ", user);
+  logger.info("Use serialization ");
   done(null, user.dataValues.userID);
 });
 passport.deserializeUser(async (id, done) => {
   try {
-    console.log("Deserializing user with id:", id);
+    logger.info(`Deserializing user  Done`)
     const user = await User.findByPk(id);
-    console.log("Deserializing user with id:", user);
     done(null, user);
   } catch (error) {
-    console.error("Error deserializing user:", error);
+    logger.error("Error deserializing user:", error)
     done(error, null);
   }
 });
@@ -31,7 +31,6 @@ passport.use(
       try {
         // Check if the user already exists
         const user = await User.findOne({ where: { googleId: profile.id } });
-        console.log("profile", profile);
 
         if (!user) {
           const newUser = await registerNewUser({
@@ -42,6 +41,7 @@ passport.use(
           if (newUser) {
             done(null, newUser);
           } else {
+            logger.error("Failed to create a new user");
             done(new Error("Failed to create a new user"), null);
           }
         
@@ -50,7 +50,8 @@ passport.use(
           done(null, user);
         }
       } catch (error) {
-        console.error("Error during OAuth handling:", error);
+        logger.error("Error during OAuth handling:", error);
+
         done(error, null);
       }
     }
