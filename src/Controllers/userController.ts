@@ -154,3 +154,16 @@ module.exports.verifyToken = async (req, res, next) => {
     return res.status(401).json({ error: "Unauthorized: Invalid token" });
   }
 };
+
+export const logOutUser=async(req:Request,res:Response)=>{
+  try {
+    res.cookie("token","",{expires:new Date(0),httpOnly:true});
+    logger.info("Log out for the user is successful");
+    res.status(200).json({message:"Log out successfully"});
+     
+  } catch (error) {
+    logger.error("Failed log out ",error);
+    res.status(500).json({error:"Internal server error"});
+  }
+
+}
