@@ -8,19 +8,30 @@ import { fakeCartData } from "./cartItemFake";
 import * as db from "../Models/index";
 import { userData } from "./userFake";
 import { CartData } from "./cartFake";
-
+import slugify from "slugify";
 async function seedTables() {
   try {
     // Assuming you have defined models and their associations
     // Seed categories
     await sequelize.sync({ force: true }); // Note: Use force: true for development only
-
-    await db.category.bulkCreate(categoriesData);
+    const categoryWithSLugs = categoriesData.map((categoriesData) => ({
+      ...categoriesData,
+      slug: slugify(categoriesData.name,{ lower: true }),
+    }));
+    await db.category.bulkCreate(categoryWithSLugs);
     // Seed brands
-    await db.brand.bulkCreate(brandsData);
+    const brandsWithSlugs = brandsData.map((brandData) => ({
+      ...brandData,
+      slug: slugify(brandData.name, { lower: true }),
+    }));
+    await db.brand.bulkCreate(brandsWithSlugs);
     // Seed images
     // Seed products
-    await db.Product.bulkCreate(productsData);
+    const productsWithSlugs = productsData.map((productsData) => ({
+      ...productsData,
+      slug: slugify(productsData.title, { lower: true }),
+    }));
+    await db.Product.bulkCreate(productsWithSlugs);
     await db.images.bulkCreate(imagesData);
     await db.User.bulkCreate(userData);
     // Seed reviews
