@@ -5,7 +5,12 @@ interface OrderAttributes extends Model {
   orderItemID: number;
   orderID: number;
   productID: number;
-  price: number; 
+  productPrice: number;
+  productQuantity:number;
+  productDiscount:number;
+  subTotal:string;
+  productTitle: string;
+  productSubtitle: string;
 }
 
 const orderItem = sequelize.define<OrderAttributes>('orderItems', {
@@ -39,7 +44,7 @@ const orderItem = sequelize.define<OrderAttributes>('orderItems', {
     allowNull: false,
   },
   productDiscount: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.FLOAT,
     allowNull: false,
   },
   subTotal: {

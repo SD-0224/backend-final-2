@@ -8,6 +8,11 @@ interface cartItemAttributes extends Model {
   cartID: number; 
   productID: number;
   productQuantity: number;
+  productPrice: number;
+  productDiscount:number;
+  subTotal:number;
+  productTitle: string;
+  productSubtitle: string;
   isOrdered: boolean;
 }
 
@@ -34,6 +39,25 @@ const CartItem = sequelize.define<cartItemAttributes>('cartItems', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  productPrice: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  productTitle: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  productSubtitle: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  productDiscount: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  subTotal: {
+    type: DataTypes.FLOAT
+  },
   isOrdered: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
@@ -44,6 +68,18 @@ const CartItem = sequelize.define<cartItemAttributes>('cartItems', {
   tableName: 'cartItems'
 });
 
+CartItem.beforeCreate((cartItem) => {
+  calculateSubTotal(cartItem);
+});
+
+CartItem.beforeUpdate((cartItem) => {
+  calculateSubTotal(cartItem);
+});
+
+function calculateSubTotal(cartItem: cartItemAttributes) {
+  const subTotal = cartItem.productPrice * (1 - cartItem.productDiscount) * cartItem.productQuantity;
+  cartItem.subTotal = parseFloat(subTotal.toFixed(2));
+}
 
 CartItem.belongsTo(Cart, { foreignKey: 'cartID' });
 

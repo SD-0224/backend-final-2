@@ -1,4 +1,3 @@
-import { options } from "joi";
 import * as db from "../Models/index";
 import { sequelize } from "../config/dbConfig";
 
@@ -6,6 +5,8 @@ interface QueryOptions {
   where?: any;
   order?: any;
   having?: any;
+  transaction?: any;
+  lock?: any;
 }
 /**
  * Retrieve products by category with pagination.
@@ -33,7 +34,6 @@ const getProducts = async (
         "slug",
         [sequelize.literal('(SELECT name FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brandName'],
         [sequelize.literal('(SELECT slug FROM brand WHERE brand.brandID = products.brandID LIMIT 1)'), 'brand-slug'],
-
         [sequelize.literal('(SELECT name FROM category WHERE category.categoryID = products.categoryID LIMIT 1)'), 'category'],
         [sequelize.literal('(SELECT slug FROM category WHERE category.categoryID = products.categoryID LIMIT 1)'), 'category-slug'],
 
@@ -138,11 +138,46 @@ const getProductById = async (id:number, options?:QueryOptions) =>
     }
   }
 
+  const updateProduct = async (productId: number, quantityToDecrease: number, transaction?: any) => {
+    try {
+      const product = await db.Product.findOne({
+        where: {
+          productID: productId
+        },
+        transaction // Pass the transaction object to the findOne operation
+      });
+  
+      if (!product) {
+        throw new Error(`Product with ID ${productId} not found`);
+      }
+  
+      // Decrease the quantity by the specified amount
 
+      if (quantityToDecrease < 0) {
+        throw new Error(`Quantity cannot be negative`);
+      }
+  
+      // Update the product with the new quantity, passing the transaction object
+      await db.Product.update(
+        { quantity: quantityToDecrease },
+        {
+          where: {
+            productID: productId
+          },
+          transaction // Pass the transaction object to the update operation
+        }
+      );
+    } catch (error) {
+      console.error("Error updating product:", error);
+      throw new Error("Failed to update product");
+    }
+  };
+  
 const productServices = {
   getProducts,
   countProducts,
   getProductById,
+  updateProduct,
 };
 
 

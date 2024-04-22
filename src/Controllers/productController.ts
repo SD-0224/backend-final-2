@@ -454,7 +454,6 @@ export const getRelatedProcuts = async (
     const category = await db.category.findOne({
       where: { name: categoryName },
     });
-    console.log(brand);
     // If brand not found, return 404 response
     if (!brand) {
       return res.status(404).json({

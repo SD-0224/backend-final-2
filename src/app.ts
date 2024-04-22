@@ -15,6 +15,7 @@ import productRouter from "./Routers/productRouter"
 import brandRouter from "./Routers/brandRouter"
 import categoryRouter from "./Routers/categoryRouter"
 import cartRouter from './Routers/cartRouter';
+import orderRouter from "./Routers/orderRouter";
 import pino from 'pino';
 import {config} from './config/pino';
 const app = express();
@@ -65,7 +66,7 @@ app.use('/categories', categoryRouter)
 app.use("/cart",cartRouter);
 // app.use('/wishList', wishListRoutes)
 // app.use('/profile', profileRoutes )
-// app.use('/orders', orderRoutes)
+app.use('/orders', orderRouter)
 // Sync models with the database
 syncModels()
   .then(() => {
@@ -79,4 +80,4 @@ syncModels()
   });
 //DO NOT UNCOMMENT UNLESS WE LOSE DATA!!!!!
 //DONT UNCOMMENT I REPEAT!
-//  seedTables();
+ seedTables();
