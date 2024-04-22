@@ -1,7 +1,7 @@
 import { User } from "../Models/user";
 import bcrypt, { genSaltSync } from "bcrypt";
 import generateFakeSecretKey from "../Utils/helper";
-import { validateEmail, validatePassword,validateFirstName,validateLastName } from "../Validators/UserHandler";
+import { validateEmail, validatePassword,validateFirstName,validateLastName ,validatePhoneNumber} from "../Validators/UserHandler";
 import { Request, Response } from "express";
 import{logger} from "../config/pino";
 const jwt = require("jsonwebtoken");
@@ -32,6 +32,9 @@ export const registerNewUser = async (userData: any) => {
     }
     if(!validateLastName(lastName)){
       return {error:"Invalid last name"};
+    }
+    if(!validatePhoneNumber(phoneNumber)){
+return {error:"Invalid phone Number"}
     }
 
     // Hashing the password before storing in the db

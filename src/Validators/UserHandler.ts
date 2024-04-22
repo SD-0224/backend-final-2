@@ -23,11 +23,15 @@ export const validateFirstName = (firstName: String) => {
   return validFormat;
 };
 export const validateLastName = (lastName: String) => {
-    const trimmedLastName:string=lastName.trim();
+  const trimmedLastName: string = lastName.trim();
 
-    const validFormat: boolean =
+  const validFormat: boolean =
     /^[a-zA-Z]+$/.test(trimmedLastName) &&
     trimmedLastName.length >= 3 &&
     trimmedLastName.length <= 10;
   return validFormat;
+};
+export const validatePhoneNumber = (phoneNumber: string): boolean => {
+  const PhonePattern: RegExp = /^{10}d/;
+  return PhonePattern.test(phoneNumber);
 };
