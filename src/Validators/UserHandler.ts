@@ -32,6 +32,6 @@ export const validateLastName = (lastName: String) => {
   return validFormat;
 };
 export const validatePhoneNumber = (phoneNumber: string): boolean => {
-  const PhonePattern: RegExp = /^{10}d/;
+  let PhonePattern: RegExp = /^\d{10}$/;
   return PhonePattern.test(phoneNumber);
 };
