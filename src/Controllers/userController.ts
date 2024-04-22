@@ -1,13 +1,15 @@
 import { User } from "../Models/user";
 import bcrypt, { genSaltSync } from "bcrypt";
 import generateFakeSecretKey from "../Utils/helper";
-import { validateEmail, validatePassword } from "../Validators/errorHandler";
+import { validateEmail, validatePassword,validateFirstName,validateLastName } from "../Validators/UserHandler";
+import { Request, Response } from "express";
+import{logger} from "../config/pino";
 const jwt = require("jsonwebtoken");
 //Generate fake secret key
 const secretKey = generateFakeSecretKey();
 
 export const registerNewUser = async (userData: any) => {
-  const { email, password, googleId } = userData;
+  const { email, password, googleId,phoneNumber,lastName,firstName } = userData;
 
   try {
     if (!email || email.trim() === "") {
@@ -25,6 +27,12 @@ export const registerNewUser = async (userData: any) => {
     if (!validatePassword(password)) {
       return { error: "Invalid password" };
     }
+    if(!validateFirstName(firstName)){
+      return {error:"Invalid First Name"};
+    }
+    if(!validateLastName(lastName)){
+      return {error:"Invalid last name"};
+    }
 
     // Hashing the password before storing in the db
     const salt = bcrypt.genSaltSync(10);
@@ -34,6 +42,9 @@ export const registerNewUser = async (userData: any) => {
     const newUser = await User.create({
       email: email || "",
       password: hash,
+      firstName:firstName,
+      lastName:lastName,
+      phoneNumber:phoneNumber,
       googleId: googleId || null,
     });
 
@@ -44,7 +55,7 @@ export const registerNewUser = async (userData: any) => {
   }
 };
 
-//Create new user from existing account 
+//Create new user from existing account
 export const register = async (req: any, res: any) => {
   try {
     const newUser = await registerNewUser(req.body);
@@ -59,15 +70,15 @@ export const register = async (req: any, res: any) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
-module.exports.loginUser = async (req, res) => {
+export const loginUser = async (req: Request, res: Response) => {
   try {
-    const { password, identifier } = req.body;
-    console.log("Identifier:", identifier);
+    const { password, email } = req.body;
+    console.log("email:", email);
     console.log("Password:", password);
 
     let user;
-    if (validateEmail(identifier)) {
-      user = await User.findOne({ where: { email: identifier } });
+    if (validateEmail(email)) {
+      user = await User.findOne({ where: { email: email } });
     } else {
       return res.status(400).json({ error: "Invalid email or username" });
     }
@@ -88,13 +99,13 @@ module.exports.loginUser = async (req, res) => {
 
     console.log("Login successful");
 
-    const token = jwt.sign(
+    const token: string = jwt.sign(
       { userId: user._id, username: user.username },
       secretKey,
       { expiresIn: "1h" }
     );
-console.log("secretKey",secretKey);
-res.cookie("token", token, { httpOnly: true });
+    console.log("secretKey", secretKey);
+    res.cookie("token", token, { httpOnly: true });
     res.status(200).json({ user, token });
   } catch (error) {
     console.error("Error during login:", error);
@@ -105,8 +116,8 @@ res.cookie("token", token, { httpOnly: true });
 //Middleware to verify JWT token
 
 module.exports.verifyToken = async (req, res, next) => {
-  const token = req.cookies.token; 
-    console.log("value of token");
+  const token = req.cookies.token;
+  console.log("value of token");
   if (!token) {
     return res.status(401).json({ error: "Unauthorized: Token is missing" });
   }
@@ -118,5 +129,3 @@ module.exports.verifyToken = async (req, res, next) => {
     return res.status(401).json({ error: "Unauthorized: Invalid token" });
   }
 };
-
-
