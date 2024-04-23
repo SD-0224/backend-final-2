@@ -537,7 +537,56 @@ export const getProductsByDiscount = async (
     });
   } catch (error) {
     // Handle errors and send appropriate error response
-    console.log("Error getting products by brand", error);
+    console.log("Error getting products by discount", error);
+    res.status(error.status).json({ error: error.message });
+  }
+};
+
+
+export const getProductByQuantity = async (
+  req: Request,
+  res: Response
+): Promise<any> => {
+  try {
+
+    //Extract quantity  from Query
+    const quantity = Number(req.query.quantity) || 20;
+
+    // Extract page and limit from query parameters, with default values if not provided
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
+    // Define options for querying products
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const options = {
+      where: {
+        quantity: {
+          [Op.lte]: quantity,
+        }
+      },
+      order: [["title", "ASC"]], // Sorting products by title in ascending order
+    };
+
+    // Count total number of products for the brand
+    const count = await productServices.countProducts(options);
+
+    // Retrieve products based on options, page, and limit
+    const products = await productServices.getProducts(
+      options,
+      Number(page),
+      Number(limit)
+    );
+
+    // Return products and count in the response
+    return res.status(200).json({
+      products,
+      count,
+    });
+  } catch (error) {
+    // Handle errors and send appropriate error response
+    console.log("Error getting products by quantity", error);
     res.status(error.status).json({ error: error.message });
   }
 };
