@@ -3,7 +3,7 @@ export const userData = [
     firstName: "Griswold",
     lastName: "Tettersell",
     email: "gtettersell0@sciencedaily.com",
-    password: '$2b$10$v2Bgadow5FfTJ79iUM6wsOSZ49chrvUokwOkUv6KBwEL0ccmKOMTu',
+    password: '$10$v2Bgadow5FfTJ79iUM6wsOSZ49chrvUokwOkUv6KBwEL0ccmKOMTu',
     phoneNumber: "810-528-0390",
     image: "https://robohash.org/possimusveniamtempora.png?size=50x50&set=set1",
     dateOfBirth: "8/13/2023",
