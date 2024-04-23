@@ -31,61 +31,69 @@ export const cartController = {
   },
   addItemsToCart: async (req: Request & { userID: number }, res: Response) => {
     try {
-        const token = req.cookies.token;
-        const userId = req.userID; 
-        logger.info(`Checking if user with ID ${userId} exists in the cart`);
+      const token = req.cookies.token;
+      const userId = req.userID;
+      logger.info(`Checking if user with ID ${userId} exists in the cart`);
       const productId = req.params.productID;
       const { quantity } = req.body;
-  
+
       // Log token retrieval
       logger.info(`Token retrieved: ${token}`);
-  
+
       if (!token) {
         logger.error("Invalid Authentication token");
         return res
           .status(401)
           .json({ error: "UnAuthorized:Authentication token is missed" });
       }
-  
+
       const decodedToken = jwt.decode(token);
-  
+
       logger.info(`Decoded token: ${JSON.stringify(decodedToken)}`);
-  
-      if (!decodedToken || !decodedToken.userId || decodedToken.userId !== userId) {
+
+      if (
+        !decodedToken ||
+        !decodedToken.userId ||
+        decodedToken.userId !== userId
+      ) {
         logger.error("Unauthorized: User not authenticated");
         return res
           .status(401)
           .json({ error: "Unauthorized: User not authenticated" });
       }
-  
+
       // Check if the user exists
       const user = await db.User.findByPk(userId);
-  
+
       logger.info(`User retrieved: ${JSON.stringify(user)}`);
-  
+
       if (!user) {
         logger.error("Unauthorized: User not authenticated");
         return res
           .status(401)
           .json({ error: "Unauthorized: User not authenticated" });
       }
-  
+
       //Checks if the product already exists
       const productItem = await db.Product.findByPk(productId);
-  
+
       // Log product retrieval
       logger.info(`Product retrieved: ${JSON.stringify(productItem)}`);
-  
-      if (!productItem || productItem.quantity == 0 || productItem.quantity < quantity) {
+
+      if (
+        !productItem ||
+        productItem.quantity == 0 ||
+        productItem.quantity < quantity
+      ) {
         logger.error(`Product ${productId} not found`);
         return res.status(404).json({ error: "Product not found" });
       }
-  
+
       logger.info(`Product ${productId} found: ${JSON.stringify(productItem)}`);
-  
+
       // Create or find the cart based on the userID
       let cart = await Cart.findOne({ where: { userID: userId } });
-  
+
       if (!cart) {
         try {
           cart = await Cart.create({ userID: userId });
@@ -95,16 +103,16 @@ export const cartController = {
           return res.status(500).json({ error: "Error creating cart" });
         }
       }
-  
+
       // Check if cart item already exists
       const cartItemExist = await db.CartItem.findOne({
         where: { cartID: cart.cartID, productID: productId },
       });
-  
+
       if (cartItemExist) {
         return res.status(404).json({ error: "Item already added" });
       }
-  
+
       try {
         const cartItem = await db.CartItem.create({
           userID: cart.userID,
@@ -116,13 +124,13 @@ export const cartController = {
           productSubtitle: productItem.subTitle,
           productDiscount: productItem.discount,
         });
-  
+
         logger.info("Cart created successfully");
         res.status(200).json({
           message: `Adding ${productId} to cart for the user ${userId}`,
           cartItem: cartItem,
         });
-  
+
         logger.info(`Adding ${productId} to cart for the user ${userId}`);
       } catch (error) {
         logger.error(
@@ -135,10 +143,20 @@ export const cartController = {
       res.status(500).json({ error: "Internal server Error" });
     }
   },
-  
-  deleteItemsFromCart: async (req: Request, res: Response) => {
+
+  deleteItemsFromCart: async (
+    req: Request & { userID: Number },
+    res: Response
+  ) => {
     try {
       const { userId, productId } = req.body;
+      const { userID } = req;
+      if (userID !== userId) {
+        logger.error("Unauthorized: User can't delete items fom the cart");
+        return res
+          .status(401)
+          .json({ error: "Unauthorized: User does not have permission" });
+      }
       let cart = await db.Cart.findOne({ where: { userID: userId } });
       if (!cart) {
         logger.error(`Cart not found for user ${userId},please add items `);
