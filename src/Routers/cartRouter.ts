@@ -9,6 +9,6 @@ cartRouter.delete("/",verifyToken, cartController.deleteItemsFromCart);
 cartRouter.delete("/clear",verifyToken, cartController.clearCart);
 cartRouter.put("/inc/:user",verifyToken, cartController.increasedQty);
 cartRouter.put("/dec/:user", verifyToken,cartController.decreasedQty);
-cartRouter.post("/sync/:user", cartController.syncCart);
+cartRouter.post("/sync/:user", verifyToken,cartController.syncCart);
 
 export default cartRouter;

@@ -281,11 +281,18 @@ export const cartController = {
     }
   },
 
-  syncCart: async (req: Request, res: Response) => {
-    const userId = req.params.user;
+  syncCart: async (req: Request &{userID:Number}, res: Response) => {
+    const userId = Number(req.params.user);
     const cartItems = req.body.cartItems;
 
     try {
+      const { userID } = req;
+      if (userID !== userId) {
+        logger.error("Unauthorized: User can't create the cat for the user");
+        return res
+          .status(401)
+          .json({ error: "Unauthorized: User does not have permission" });
+      }
       let cart = await db.Cart.findOne({ where: { userID: userId } });
       if (!cart) {
         try {
