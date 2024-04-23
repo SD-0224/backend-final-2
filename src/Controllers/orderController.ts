@@ -5,11 +5,20 @@ import { Request, Response } from "express";
 import orderServices from "../Services/orderServices";
 import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
+import { validationResult } from "express-validator";
+import {logger} from "../config/pino";
 
 export const createOrder = async (req: Request, res: Response) => {
   const transaction = await sequelize.transaction();
 
   try {
+    
+    // Validate the inputs
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.error("Validation error occurred  ",errors);
+      return res.status(400).json({ errors: errors.array() });
+    }
     const { firstName, lastName, email, phoneNumber } = req.body
 
     const { street, state, city, postalCode } = req.body
