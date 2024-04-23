@@ -7,7 +7,7 @@ import {authRouter} from "./Routers/authRouter";
 import passport from 'passport';
 import path from "path";
 import session from 'express-session';
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'; 
 dotenv.config();
 import { seedTables } from './Utils/generateFake';
 import cors from "cors";
