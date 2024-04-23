@@ -5,6 +5,7 @@ import { sequelize } from "../config/dbConfig";
 import { Request, Response } from "express";
 import { Product } from "../Models/product";
 import { logger } from "../config/pino";
+
 import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import cartServices from "../Services/cartServices";
