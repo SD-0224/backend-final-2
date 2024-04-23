@@ -30,7 +30,7 @@ export const userData = [
     firstName: "Hercules",
     lastName: "Le Monnier",
     email: "hlemonnier3@homestead.com",
-    password: "tolhLVVY7019+!'@XiK{iEJ3",
+    password: "tolhLVVY7019",
     phoneNumber: "885-277-0592",
     image: "https://robohash.org/explicaboquaequi.png?size=50x50&set=set1",
     dateOfBirth: "12/8/2023",

@@ -1,7 +1,7 @@
 import express from "express"
 const router = express.Router();
 import * as productController from "../Controllers/productController"
-import { validateGetByCategoryParams, validateGetByBrandsParams, validatedefaultParams, validaterelatedParams, validateReviewParams, validateSearchParams, validateSpecificParams } from "../Validators/productValidator";
+import { validateGetByCategoryParams, validateGetByBrandsParams, validatedefaultParams, validaterelatedParams, validateReviewParams, validateSearchParams, validateSpecificParams, validateDiscountParams, validateQuantityParams } from "../Validators/productValidator";
 
 
 router.get('/brand/:brand', validateGetByBrandsParams, productController.getProductsByBrand);
@@ -11,7 +11,8 @@ router.get('/trendy',validatedefaultParams,  productController.getProductsByTren
 router.get('/handpicked/:category',validateGetByCategoryParams, productController.getProductsHandpicked);
 router.get('/search/', validateSearchParams, productController.searchProduct);
 router.get('/related',validaterelatedParams, productController.getRelatedProcuts);
-router.get('/discount', productController.getProductsByDiscount);
+router.get('/discount',validateDiscountParams, productController.getProductsByDiscount);
+router.get('/limited',validateQuantityParams, productController.getProductByQuantity);
 
 router.get('/:product', validateSpecificParams, productController.getProduct);
 router.post('/rate/:product', validateReviewParams, productController.rateProduct);
