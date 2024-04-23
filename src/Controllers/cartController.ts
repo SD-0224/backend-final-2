@@ -181,7 +181,7 @@ export const cartController = {
       let userId = req.body.userId;
       const { userID } = req;
       if (userID !== userId) {
-        logger.error("Unauthorized: User can't delete items fom the cart");
+        logger.error("Unauthorized: User can't clear items fom the cart");
         return res
           .status(401)
           .json({ error: "Unauthorized: User does not have permission" });
@@ -206,9 +206,16 @@ export const cartController = {
       res.json({ error: "Internal server Error" });
     }
   },
-  increasedQty: async (req: Request, res: Response) => {
+  increasedQty: async (req: Request& { userID: Number }, res: Response) => {
     try {
-      const userId = req.params.user;
+      const userId =Number( req.params.user);
+         const { userID } = req;
+      if (userID !== userId) {
+        logger.error("Unauthorized: User can't update qty of items fom the cart");
+        return res
+          .status(401)
+          .json({ error: "Unauthorized: User does not have permission" });
+      }
       let cart = await db.Cart.findOne({ where: { userID: userId } });
       if (!cart) {
         logger.error(`Cart not found for user ${userId},please add items `);
