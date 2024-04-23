@@ -39,6 +39,17 @@ export const validateGetByBrandsParams: ValidationChain[] = [
   
   export const validateReviewParams: ValidationChain[] = [
     body('review').notEmpty().isInt({ min: 1, max: 5 }),
-    body('userID').notEmpty().isInt(),
     param('product').notEmpty().isString(),
+  ];
+
+  export const validateQuantityParams: ValidationChain[] = [
+    query('quantity').optional().isInt({ min: 1, max: 100 }),
+    query('page').optional().isInt({ min: 1 }).toInt(),
+    query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
+  ];
+
+  export const validateDiscountParams: ValidationChain[] = [
+    query('discount').optional().isFloat({ min: 0, max: 1 }),
+    query('page').optional().isInt({ min: 1 }).toInt(),
+    query('limit').optional().isInt({ min: 1, max: 100 }).toInt(),
   ];

@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 import { Product } from "../Models/product";
 import { logger } from "../config/pino";
 import jwt from "jsonwebtoken";
+import { validationResult } from "express-validator";
 import cartServices from "../Services/cartServices";
 //Get cart by userId and create a new cart objet
 export const cartController = {
@@ -34,6 +35,15 @@ export const cartController = {
       const token = req.cookies.token;
       const userId = req.userID;
       logger.info(`Checking if user with ID ${userId} exists in the cart`);
+
+      logger.info(`Checking if ${userId} exists in the cart `);
+      
+    // Validate the inputs
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.error("Validation error occurred  ",errors);
+      return res.status(400).json({ errors: errors.array() });
+    }
       const productId = req.params.productID;
       const { quantity } = req.body;
 
@@ -149,6 +159,13 @@ export const cartController = {
     res: Response
   ) => {
     try {
+      
+    // Validate the inputs
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.error("Validation error occurred  ",errors);
+      return res.status(400).json({ errors: errors.array() });
+    }
       const { userId, productId } = req.body;
       const { userID } = req;
       if (userID !== userId) {
@@ -178,6 +195,7 @@ export const cartController = {
   },
   clearCart: async (req: Request& { userID: Number }, res: Response) => {
     try {
+      
       let userId = req.body.userId;
       const { userID } = req;
       if (userID !== userId) {
@@ -215,7 +233,13 @@ export const cartController = {
         return res
           .status(401)
           .json({ error: "Unauthorized: User does not have permission" });
-      }
+      }  
+    // Validate the inputs
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.error("Validation error occurred  ",errors);
+      return res.status(400).json({ errors: errors.array() });
+    }
       let cart = await db.Cart.findOne({ where: { userID: userId } });
       if (!cart) {
         logger.error(`Cart not found for user ${userId},please add items `);
@@ -244,6 +268,13 @@ export const cartController = {
   },
   decreasedQty: async (req: Request& { userID: Number }, res: Response) => {
     try {
+      
+    // Validate the inputs
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.error("Validation error occurred  ",errors);
+      return res.status(400).json({ errors: errors.array() });
+    }
       const { productId } = req.body;
       const userId = Number(req.params.user);
       const { userID } = req;
@@ -284,7 +315,6 @@ export const cartController = {
   syncCart: async (req: Request &{userID:Number}, res: Response) => {
     const userId = Number(req.params.user);
     const cartItems = req.body.cartItems;
-
     try {
       const { userID } = req;
       if (userID !== userId) {
@@ -292,6 +322,9 @@ export const cartController = {
         return res
           .status(401)
           .json({ error: "Unauthorized: User does not have permission" });
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
       }
       let cart = await db.Cart.findOne({ where: { userID: userId } });
       if (!cart) {
@@ -304,14 +337,21 @@ export const cartController = {
           return res.status(500).json({ error: "Error creating cart" });
         }
         const addedItems = await cartServices.syncCart(cart.cartID, cartItems);
-        res.status(200).json({
+        return res.status(200).json({
           message: "Added items successfully with new cart",
           addedItems: addedItems,
         });
+        return res
+          .status(200)
+          .json({
+            message: "Added items successfully with new cart",
+            addedItems: addedItems,
+          });
       }
 
-      res.status(200).json({ message: "User already has a cart" });
+     return res.status(200).json({ message: "User already has a cart" });
     } catch (error) {
+      console.log(error)
       logger.error("Internal server Error", error);
       return res.json({ error: "Internal server Error" });
     }
