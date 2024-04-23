@@ -242,10 +242,17 @@ export const cartController = {
       res.json({ error: "Internal server Error" });
     }
   },
-  decreasedQty: async (req: Request, res: Response) => {
+  decreasedQty: async (req: Request& { userID: Number }, res: Response) => {
     try {
       const { productId } = req.body;
-      const userId = req.params.user;
+      const userId = Number(req.params.user);
+      const { userID } = req;
+      if (userID !== userId) {
+        logger.error("Unauthorized: User can't decreased items fom the cart");
+        return res
+          .status(401)
+          .json({ error: "Unauthorized: User does not have permission" });
+      }
       let cart = await db.Cart.findOne({ where: { userID: userId } });
       if (!cart) {
         logger.error(`Cart not found for user ${userId},please add items `);
