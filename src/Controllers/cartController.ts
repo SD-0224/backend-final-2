@@ -10,9 +10,14 @@ import { validationResult } from "express-validator";
 import cartServices from "../Services/cartServices";
 //Get cart by userId and create a new cart objet
 export const cartController = {
-  getCartByUserId: async (req: Request, res: Response) => {
+  getCartByUserId: async (req: Request & { userID: number }, res: Response) => {
     try {
-      let userId = req.params.userId;
+      let userId = req.userID;
+
+      if (!userId) {
+        logger.error(`User not found`);
+        return res.status(404).json({ error: "User not found" });
+      }
       logger.info(`Request received to get cart for ${userId} `);
 
       const cartItems = await cartServices.getCartByUserId(Number(userId));
@@ -37,13 +42,13 @@ export const cartController = {
       logger.info(`Checking if user with ID ${userId} exists in the cart`);
 
       logger.info(`Checking if ${userId} exists in the cart `);
-      
-    // Validate the inputs
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      logger.error("Validation error occurred  ",errors);
-      return res.status(400).json({ errors: errors.array() });
-    }
+
+      // Validate the inputs
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        logger.error("Validation error occurred  ", errors);
+        return res.status(400).json({ errors: errors.array() });
+      }
       const productId = req.params.productID;
       const { quantity } = req.body;
 
@@ -159,90 +164,88 @@ export const cartController = {
     res: Response
   ) => {
     try {
-      
-    // Validate the inputs
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      logger.error("Validation error occurred  ",errors);
-      return res.status(400).json({ errors: errors.array() });
-    }
-      const { userId, productId } = req.body;
+      // Validate the inputs
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        logger.error("Validation error occurred  ", errors);
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const {productId } = req.body;
       const { userID } = req;
-      if (userID !== userId) {
+      if (!userID) {
         logger.error("Unauthorized: User can't delete items fom the cart");
         return res
           .status(401)
           .json({ error: "Unauthorized: User does not have permission" });
       }
-      let cart = await db.Cart.findOne({ where: { userID: userId } });
+      let cart = await db.Cart.findOne({ where: { userID: userID } });
       if (!cart) {
-        logger.error(`Cart not found for user ${userId},please add items `);
+        logger.error(`Cart not found for user ${userID},please add items `);
         return res.status(404).json({ error: "Cart not found" });
       }
-      logger.info(`deleting ${productId} from ${userId}`);
+      logger.info(`deleting ${productId} from ${userID}`);
       const deletedItem = await CartItem.destroy({
         where: { cartID: cart.cartID, productID: productId },
       });
-      logger.info(`Deleted ${productId} from ${userId} successfully `);
+      logger.info(`Deleted ${productId} from ${userID} successfully `);
       if (!deletedItem) {
         return res.json({ message: `Item does not exist, no changes` });
       }
-      return res.json({ message: `Item deleted from the  cart for ${userId}` });
+      return res.json({ message: `Item deleted from the  cart for ${userID}` });
     } catch (error) {
       logger.error("Error deleting item from the cart", error);
       res.json({ error: "Internal server Error" });
     }
   },
-  clearCart: async (req: Request& { userID: Number }, res: Response) => {
+  clearCart: async (req: Request & { userID: Number }, res: Response) => {
     try {
-      
-      let userId = req.body.userId;
       const { userID } = req;
-      if (userID !== userId) {
+      if (!userID) {
         logger.error("Unauthorized: User can't clear items fom the cart");
         return res
           .status(401)
           .json({ error: "Unauthorized: User does not have permission" });
       }
-      let cart = await db.Cart.findOne({ where: { userID: userId } });
+      let cart = await db.Cart.findOne({ where: { userID: userID } });
       if (!cart) {
-        logger.error(`Cart not found for user ${userId},please add items `);
+        logger.error(`Cart not found for user ${userID},please add items `);
         return res.status(404).json({ error: "Cart not found" });
       }
-      logger.info(`Clearing ${userId} from the cart`);
+      logger.info(`Clearing ${userID} from the cart`);
       const deletedCount = await CartItem.destroy({
         where: { cartID: cart.cartID },
       });
       logger.info(`Deleted ${deletedCount} from the cart`);
 
-      logger.info(`Cart cleared successfully for user${userId}`);
+      logger.info(`Cart cleared successfully for user${userID}`);
       return res.json({
-        message: `Cart cleared successfully for user${userId}`,
+        message: `Cart cleared successfully for user${userID}`,
       });
     } catch (error) {
       logger.error("Internal server Error", error);
       res.json({ error: "Internal server Error" });
     }
   },
-  increasedQty: async (req: Request& { userID: Number }, res: Response) => {
+  increasedQty: async (req: Request & { userID: Number }, res: Response) => {
     try {
-      const userId =Number( req.params.user);
-         const { userID } = req;
-      if (userID !== userId) {
-        logger.error("Unauthorized: User can't update qty of items fom the cart");
+      const { userID } = req;
+      if (!userID) {
+        logger.error(
+          "Unauthorized: User can't update qty of items fom the cart"
+        );
         return res
           .status(401)
           .json({ error: "Unauthorized: User does not have permission" });
-      }  
-    // Validate the inputs
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      logger.error("Validation error occurred  ",errors);
-      return res.status(400).json({ errors: errors.array() });
-    }
-      let cart = await db.Cart.findOne({ where: { userID: userId } });
+      }
+      // Validate the inputs
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        logger.error("Validation error occurred  ", errors);
+        return res.status(400).json({ errors: errors.array() });
+      }
+      let cart = await db.Cart.findOne({ where: { userID: userID } });
       if (!cart) {
-        logger.error(`Cart not found for user ${userId},please add items `);
+        logger.error(`Cart not found for user ${userID},please add items `);
         return res.status(404).json({ error: "Cart not found" });
       }
       const { productId } = req.body;
@@ -266,27 +269,25 @@ export const cartController = {
       res.json({ error: "Internal server Error" });
     }
   },
-  decreasedQty: async (req: Request& { userID: Number }, res: Response) => {
+  decreasedQty: async (req: Request & { userID: Number }, res: Response) => {
     try {
-      
-    // Validate the inputs
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      logger.error("Validation error occurred  ",errors);
-      return res.status(400).json({ errors: errors.array() });
-    }
+      // Validate the inputs
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        logger.error("Validation error occurred  ", errors);
+        return res.status(400).json({ errors: errors.array() });
+      }
       const { productId } = req.body;
-      const userId = Number(req.params.user);
       const { userID } = req;
-      if (userID !== userId) {
+      if (!userID) {
         logger.error("Unauthorized: User can't decreased items fom the cart");
         return res
           .status(401)
           .json({ error: "Unauthorized: User does not have permission" });
       }
-      let cart = await db.Cart.findOne({ where: { userID: userId } });
+      let cart = await db.Cart.findOne({ where: { userID: userID } });
       if (!cart) {
-        logger.error(`Cart not found for user ${userId},please add items `);
+        logger.error(`Cart not found for user ${userID},please add items `);
         return res.status(404).json({ error: "Cart not found" });
       }
       logger.info(`Decreased quantity of product ${productId}`);
@@ -312,24 +313,24 @@ export const cartController = {
     }
   },
 
-  syncCart: async (req: Request &{userID:Number}, res: Response) => {
-    const userId = Number(req.params.user);
+  syncCart: async (req: Request & { userID: Number }, res: Response) => {
     const cartItems = req.body.cartItems;
     try {
       const { userID } = req;
-      if (userID !== userId) {
+      if (!userID) {
         logger.error("Unauthorized: User can't create the cat for the user");
         return res
           .status(401)
           .json({ error: "Unauthorized: User does not have permission" });
+      }
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
       }
-      let cart = await db.Cart.findOne({ where: { userID: userId } });
+      let cart = await db.Cart.findOne({ where: { userID: userID } });
       if (!cart) {
         try {
-          cart = await Cart.create({ userID: userId });
+          cart = await Cart.create({ userID: userID });
 
           logger.info(`Cart created successfully`);
         } catch (error) {
@@ -341,17 +342,11 @@ export const cartController = {
           message: "Added items successfully with new cart",
           addedItems: addedItems,
         });
-        return res
-          .status(200)
-          .json({
-            message: "Added items successfully with new cart",
-            addedItems: addedItems,
-          });
       }
 
-     return res.status(200).json({ message: "User already has a cart" });
+      return res.status(200).json({ message: "User already has a cart" });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       logger.error("Internal server Error", error);
       return res.json({ error: "Internal server Error" });
     }

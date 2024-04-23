@@ -12,9 +12,7 @@ export const createOrder = async (
   res: Response
 ) => {
   const transaction = await sequelize.transaction();
-
   try {
-    
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -28,9 +26,8 @@ export const createOrder = async (
       logger.error("Token not found in cookies");
       return res.status(401).json({ error: "Unauthorized: Token not found" });
     }
-    const userId = Number(req.params.user);
     const { userID } = req;
-    if (userID !== userId) {
+    if (!userID) {
       logger.error("Unauthorized: User can't create the order ");
       return res
         .status(401)
@@ -43,6 +40,7 @@ export const createOrder = async (
       city,
       postalCode,
     });
+
     if (!existingAddress) {
       existingAddress = await addressServices.createAddress(
         {
@@ -55,9 +53,9 @@ export const createOrder = async (
         transaction
       );
     }
+
     const addressID = existingAddress.addressID;
     const cart = await db.Cart.findOne({ where: { userID: userID } });
-
     const orderItems = await db.CartItem.findAll({
       where: { cartID: cart.cartID },
     });
@@ -78,9 +76,12 @@ export const createOrder = async (
         );
 
         if (!productExist || productExist.quantity == 0)
-          logger.error("product doesn't exist");
-        grandTotal += element.subTotal;
-          return res.status(400).json({ error: `product doesn't exist` });
+          {
+            logger.error("product doesn't exist");
+            return res.status(400).json({ error: `product doesn't exist` });
+          }    
+          grandTotal += element.subTotal;
+
       })
     );
     let isPaid = false;
@@ -122,11 +123,11 @@ export const createOrder = async (
       where: { cartID: cart.cartID },
     });
     await transaction.commit();
-    logger.info("Delete the the order")
-    res.status(200).json(newOrder);
+    logger.info("Delete the the cart content")
+   return res.status(200).json(newOrder);
   } catch (error) {
     await transaction.rollback();
     logger.error("Error creating order", error)
-    res.status(error.status).json({ error: error.message });
+    return res.status(error.status).json({ error: error.message });
   }
 };
