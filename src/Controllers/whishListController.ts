@@ -5,9 +5,20 @@ import { Request, Response } from "express";
 import { whitelist } from "validator";
 
 export const whishListController = {
-  toggleWhishListProducts: async (req: Request, res: Response) => {
-    const { userID, productID } = req.body;
+  toggleWhishListProducts: async (req: Request&{userID:Number}, res: Response) => {
     try {
+      const token = req.cookies.token;
+      if (!token) {
+        // logger.error("Token not found in cookies");
+        return res.status(401).json({ error: "Unauthorized: Token not found" });
+      }
+      const { userID, productID } = req.body;
+      if (!userID) {
+        // logger.error("Unauthorized: User can't create the order ");
+        return res
+          .status(401)
+          .json({ error: "Unauthorized: User does not have permission" });
+      }
       //Check if the Items already are exists in the list
       const ItemExisted = await wishList.findOne({
         where: { userID, productID },
@@ -28,7 +39,7 @@ export const whishListController = {
       res.status(500).json({ error: "Internal server error" });
     }
   },
-  getWhishListByUserId:async(req:Request,res:Response)=>{
+  getWhishListByUserId:async(req:Request&{userID:Number},res:Response)=>{
 try {
     const {userId}=req.params;
     const userWishList=await wishList.findAll({where:{userID:userId}});
