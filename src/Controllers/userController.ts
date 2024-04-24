@@ -108,24 +108,24 @@ export const loginUser = async (req: Request, res: Response) => {
     const { password, email } = req.body;
     logger.info(`Attempting login user by an email${email}`);
 
-    let user;
+    let user:any;
     if (validateEmail(email)) {
       user = await User.findOne({ where: { email: email } });
     } else {
       logger.error("Invalid email or username");
-      return res.status(400).json({ error: "Invalid email or username" });
+      return res.status(400).json([{ error: "Invalid email or username" }]);
     }
 
     if (!user) {
       logger.error("User not found");
-      return res.status(404).json({ error: "User not found" });
+      return res.status(404).json([{ error: "User not found" }]);
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
       logger.error("Wrong username or password!");
-      return res.status(400).json({ error: "Wrong username or password!" });
+      return res.status(400).json([{ error: "Wrong username or password!" }]);
     }
 
     logger.info("successful Login ");

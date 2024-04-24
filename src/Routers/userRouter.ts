@@ -8,7 +8,7 @@ export const userRouter = express.Router();
 
 //Route for register new user
 userRouter.post("/register", register);
-userRouter.get("/login", loginUser);
+userRouter.post("/login", loginUser);
 userRouter.post("/logout", logOutUser);
 
 
