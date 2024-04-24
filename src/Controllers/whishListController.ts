@@ -19,17 +19,20 @@ export const whishListController = {
         res.json({ message: "Item already exits" });
       } else {
         //Add Items to the list
-        await wishList.create({ where: { userID, productID } });
+        await wishList.create( { userID, productID });
+        res.status(201).json({message:"Item added successfully to whishList"})
       }
     } catch (error) {
+      console.log("error",error);
+      
       res.status(500).json({ error: "Internal server error" });
     }
   },
   getWhishListByUserId:async(req:Request,res:Response)=>{
 try {
     const {userId}=req.params;
-    const userWishList=await wishList.findAll({where:{userId}});
-    res.status(200).json({message:"Whish list of items returned successfully",userWishList});
+    const userWishList=await wishList.findAll({where:{userID:userId}});
+    res.status(200).json({message:"Whish list of items returned successfully",userWishList},);
 } catch (error) {
     res.status(500).json({error:"Internal service error"});
 }

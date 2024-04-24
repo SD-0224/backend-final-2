@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 import * as db from './Models/index';
 import {userRouter} from './Routers/userRouter';
 import {authRouter} from "./Routers/authRouter";
+import {whishListRouter} from "./Routers/whishlistRouter";
 import passport from 'passport';
 import path from "path";
 import session from 'express-session';
@@ -67,7 +68,7 @@ app.use('/products', productRouter)
 app.use('/brands', brandRouter)
 app.use('/categories', categoryRouter)
 app.use("/cart",cartRouter);
-// app.use('/wishList', wishListRoutes)
+app.use('/wishList', whishListRouter)
 // app.use('/profile', profileRoutes )
 app.use('/orders', orderRouter)
 // Sync models with the database
