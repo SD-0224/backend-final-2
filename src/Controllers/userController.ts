@@ -88,7 +88,14 @@ export const register = async (req: any, res: any) => {
     } else {
       logger.info(`New user: ${UserInfo.email} registered successfully`);
       logger.info("New user registration successful");
-      return res.status(201).json(UserInfo);
+      const token: string = jwt.sign(
+        { userId: UserInfo.userID }, 
+        secretKey,
+        { expiresIn: "1d" }
+      );
+      res.cookie("token", token, { httpOnly: true });
+
+      return res.status(201).json({ user: UserInfo, token });
     }
   } catch (error) {
     logger.error("Error registering user:", error);
