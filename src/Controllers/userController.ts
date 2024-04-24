@@ -107,27 +107,54 @@ export const loginUser = async (req: Request, res: Response) => {
   try {
     const { password, email } = req.body;
     logger.info(`Attempting login user by an email${email}`);
+    const errors = [];
+    if (!email)
+      {
+        logger.error("Invalid email");
+        errors.push("Email is required");
 
+      }
+      if (!password)
+        {
+          logger.error("Invalid password");
+          errors.push("password is required");
+  
+        }
     let user:any;
     if (validateEmail(email)) {
       user = await User.findOne({ where: { email: email } });
     } else {
-      logger.error("Invalid email or username");
-      return res.status(400).json([{ error: "Invalid email or username" }]);
+      logger.error("Invalid email");
+      errors.push("Invalid email");
     }
 
     if (!user) {
       logger.error("User not found");
-      return res.status(404).json([{ error: "User not found" }]);
+      errors.push("User not found");
+      if (errors.length > 0)
+        {
+          logger.error("Login failed:", errors.join(", "));
+  
+         return res.status(400).json({errors})
+        }
+  
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
     if (!isPasswordCorrect) {
-      logger.error("Wrong username or password!");
-      return res.status(400).json([{ error: "Wrong username or password!" }]);
+      logger.error("Wrong password!");
+      errors.push("Password not correct");
+      
     }
+    if (errors.length > 0)
+      {
+        logger.error("Login failed:", errors.join(", "));
 
+       return res.status(400).json({errors})
+      }
+
+  
     logger.info("successful Login ");
     const { password: _, ...userWithoutPassword } = user.toJSON();
 
@@ -140,7 +167,7 @@ export const loginUser = async (req: Request, res: Response) => {
     res.cookie("token", token, { httpOnly: true });
     res.status(200).json({ user: userWithoutPassword, token });
   } catch (error) {
-    logger.error("Error during login:");
+    logger.error("Error during login:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
