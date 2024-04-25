@@ -334,13 +334,24 @@ export const getProduct = async (req: Request, res: Response): Promise<any> => {
 };
 
 export const rateProduct = async (
-  req: Request,
+  req: Request& { userID: Number },
   res: Response
 ): Promise<any> => {
   try {
     const review = req.body.review;
     const slug = req.params.product;
-    const userID = req.body.userID;
+    let token = req.cookies.token;
+    if (!token) {
+      logger.error("Token not found in cookies");
+      return res.status(401).json({ error: "Unauthorized: Token not found" });
+    }
+    const { userID } = req;
+    if (!userID) {
+      logger.error("Unauthorized: User can't create the order ");
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: User does not have permission" });
+    }
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });

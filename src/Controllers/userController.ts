@@ -156,16 +156,18 @@ export const loginUser = async (req: Request, res: Response) => {
 
   
     logger.info("successful Login ");
-    const { password: _, ...userWithoutPassword } = user.toJSON();
+   
 
     const token: string = jwt.sign(
       { userId: user.userID }, 
       secretKey,
       { expiresIn: "1d" }
     );
+    const { password: _, ...userWithoutPassword } = user.toJSON();
+    userWithoutPassword.token=token;
     console.log("secretKey", secretKey);
     res.cookie("token", token, { httpOnly: true });
-    res.status(200).json({ user: userWithoutPassword, token });
+    res.status(200).json({ user: userWithoutPassword });
   } catch (error) {
     logger.error("Error during login:", error);
     res.status(500).json({ error: "Internal server error" });
