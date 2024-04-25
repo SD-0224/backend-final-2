@@ -4,6 +4,7 @@ import bodyParser from 'body-parser'
 import * as db from './Models/index';
 import {userRouter} from './Routers/userRouter';
 import {authRouter} from "./Routers/authRouter";
+import {whishListRouter} from "./Routers/whishlistRouter";
 import passport from 'passport';
 import path from "path";
 import session from 'express-session';
@@ -18,6 +19,8 @@ import cartRouter from './Routers/cartRouter';
 import orderRouter from "./Routers/orderRouter";
 import pino from 'pino';
 import {config} from './config/pino';
+const { collectDefaultMetrics, register } = require('prom-client');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
  const logger = pino({
@@ -32,6 +35,11 @@ const PORT = process.env.PORT || 3000;
  });
 logger.info("Application started");
 
+collectDefaultMetrics();
+app.get('/metrics', (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(register.metrics());
+});
 const test = db.address;
 app.use(cors());
 
@@ -67,7 +75,7 @@ app.use('/products', productRouter)
 app.use('/brands', brandRouter)
 app.use('/categories', categoryRouter)
 app.use("/cart",cartRouter);
-// app.use('/wishList', wishListRoutes)
+app.use('/wishList', whishListRouter)
 // app.use('/profile', profileRoutes )
 app.use('/orders', orderRouter)
 // Sync models with the database
