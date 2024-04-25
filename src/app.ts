@@ -41,7 +41,7 @@ app.get('/metrics', (req, res) => {
   res.end(register.metrics());
 });
 const test = db.address;
-app.use(cors());
+app.use(cors({ origin: '*', credentials: true }));
 
 app.use(express.json());
 app.use(bodyParser.json());
