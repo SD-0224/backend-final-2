@@ -19,6 +19,8 @@ import cartRouter from './Routers/cartRouter';
 import orderRouter from "./Routers/orderRouter";
 import pino from 'pino';
 import {config} from './config/pino';
+const { collectDefaultMetrics, register } = require('prom-client');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
  const logger = pino({
@@ -33,6 +35,11 @@ const PORT = process.env.PORT || 3000;
  });
 logger.info("Application started");
 
+collectDefaultMetrics();
+app.get('/metrics', (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(register.metrics());
+});
 const test = db.address;
 app.use(cors());
 
