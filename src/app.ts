@@ -41,9 +41,18 @@ app.get('/metrics', (req, res) => {
   res.end(register.metrics());
 });
 const test = db.address;
-app.use(cors({ 
-     credentials: true           
-            }));
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g., direct requests)
+    if (!origin) {
+      callback(null, '*');
+    } else {
+      // Echo the origin back as the value for Access-Control-Allow-Origin
+      callback(null, origin);
+    }
+  },
+  credentials: true // if you need to include credentials in requests
+}));
 
 app.use(express.json());
 app.use(bodyParser.json());
