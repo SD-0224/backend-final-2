@@ -11,7 +11,7 @@ export const validateEmail = (email: string) => {
 export const validatePassword = (password: string) => {
   //Use regular  expression to validate the password
   const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-  return passwordRegex.test(password);
+    return passwordRegex.test(password);
 };
 
 export const validateFirstName = (firstName: String) => {
