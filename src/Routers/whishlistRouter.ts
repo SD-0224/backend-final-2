@@ -5,4 +5,4 @@ import {verifyToken} from "../Controllers/userController";
 
 export const whishListRouter=express.Router();
 whishListRouter.post("/toggle",verifyToken,whishListController.toggleWhishListProducts);
-whishListRouter.get("/:userId",verifyToken,whishListController.getWhishListByUserId);
+whishListRouter.get("/",verifyToken,whishListController.getWhishListByUserId);

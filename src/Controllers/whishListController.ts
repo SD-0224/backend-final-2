@@ -15,7 +15,8 @@ export const whishListController = {
         logger.error("Token not found in cookies");
         return res.status(401).json({ error: "Unauthorized: Token not found" });
       }
-      const { userID, productID } = req.body;
+      const {productID } = req.body;
+      const userID = req.userID;
       if (!userID) {
         logger.error(
           "Unauthorized: User can't add whishList Items to the list  "
@@ -33,7 +34,7 @@ export const whishListController = {
       if (ItemExisted) {
         logger.info("Removing existing Items  from the list");
         await ItemExisted.destroy();
-        res.json({ message: "Item already exits" });
+        res.json({ message: "Item removed from wishlist" });
       } else {
         //Add Items to the list
         await wishList.create({ userID, productID });
@@ -51,10 +52,11 @@ export const whishListController = {
     res: Response
   ) => {
     try {
-      const { userId } = req.params;
-      logger.info(`Get the list of favorites items for the user ${userId}`);
+      const  userID  = req.userID;
+      logger.info(`Get the list of favorites items for the user ${userID}`);
       const userWishList = await wishList.findAll({
-        where: { userID: userId },
+        where: { userID: userID },
+        include: [{ model: Product, as: 'product' }]
       });
       logger.info("Whish list of items returned successfully");
       res
