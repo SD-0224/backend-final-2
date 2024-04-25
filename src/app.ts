@@ -50,7 +50,7 @@ app.use(cors({ origin: async (origin) => {
       // Allow requests with the provided origin
       return origin;
     }
-  }
+  },
      credentials: true           
             }));
 
