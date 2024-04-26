@@ -19,7 +19,7 @@ import cartRouter from './Routers/cartRouter';
 import orderRouter from "./Routers/orderRouter";
 import pino from 'pino';
 import {config} from './config/pino';
-const { collectDefaultMetrics, register } = require('prom-client');
+const client = require('prom-client')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,11 +35,19 @@ const PORT = process.env.PORT || 3000;
  });
 logger.info("Application started");
 
-collectDefaultMetrics();
-app.get('/metrics', (req, res) => {
-  res.set('Content-Type', register.contentType);
-  res.end(register.metrics());
+// Create a Registry which registers the metrics
+const register = new client.Registry()
+// Add a default label which is added to all metrics
+register.setDefaultLabels({
+  app: 'ecommerce-monitoring'
 });
+
+//Enable the collection for default metric
+client.collectDefaultMetrics({register});
+
+
+
+
 const test = db.address;
 app.use(cors());
 
@@ -78,10 +86,41 @@ app.use("/cart",cartRouter);
 app.use('/wishList', whishListRouter)
 // app.use('/profile', profileRoutes )
 app.use('/orders', orderRouter)
+
+
+// Create a Histogram metric
+const httpRequestDurationMicroseconds = new client.Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in microseconds',//Description of the aim of the metric 
+  labelNames: ['method', 'route', 'code','route_name'],
+  buckets: [0.1, 0.3, 0.5, 0.7, 1, 3, 5, 7, 10]
+})
+// Register the histogram
+register.registerMetric(httpRequestDurationMicroseconds)
+//GEt the metric of the app
+app.get('/metrics', async (req, res) => {
+  try {
+    const route=req.originalUrl.split("?")[0];
+    //Start timing the request 
+    const end=httpRequestDurationMicroseconds.startTimer({route});
+    const metrics = await register.metrics();
+    //Stop timing the request
+    end();
+    res.set('Content-Type', register.contentType);
+    res.send(metrics);
+  } catch (error) {
+    console.error('Error generating metrics:', error);
+    res.status(500).send('Error generating metrics');
+  }
+});
+
+
+
 // Sync models with the database
 syncModels()
   .then(() => {
     console.log('Database synced successfully');
+    
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
