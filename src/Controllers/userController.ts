@@ -178,7 +178,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const verifyToken = async (req, res, next) => {
   const token = req.cookies.token;
-  // console.log("value of token");
+   console.log("value of token", token);
   logger.info("token",token);
   if (!token) {
       return res.status(401).json({ error: "Unauthorized: Token is missing" });
