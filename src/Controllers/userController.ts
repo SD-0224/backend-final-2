@@ -179,7 +179,7 @@ export const loginUser = async (req: Request, res: Response) => {
 export const verifyToken = async (req, res, next) => {
  const authHeader = req.headers['Authorization'];
   const token = authHeader && authHeader.split(' ')[1];
-   console.log("value of token", token);
+   console.log("Request:', req);
   logger.info("token",token);
   if (!token) {
       return res.status(401).json({ error: "Unauthorized: Token is missing" });
