@@ -93,7 +93,7 @@ export const register = async (req: any, res: any) => {
         secretKey,
         { expiresIn: "1d" }
       );
-      res.cookie("token", token, { httpOnly: true });
+      res.cookie("token", token, { httpOnly: true, sameSite: 'none' });
 
       return res.status(201).json({ user: UserInfo, token });
     }
@@ -166,7 +166,7 @@ export const loginUser = async (req: Request, res: Response) => {
     const { password: _, ...userWithoutPassword } = user.toJSON();
     userWithoutPassword.token=token;
     console.log("secretKey", secretKey);
-    res.cookie("token", token, { httpOnly: true });
+    res.cookie("token", token, { httpOnly: true, sameSite: 'none' });
     res.status(200).json({ user: userWithoutPassword, token });
   } catch (error) {
     logger.error("Error during login:", error);
@@ -177,8 +177,11 @@ export const loginUser = async (req: Request, res: Response) => {
 //Middleware to verify JWT token
 
 export const verifyToken = async (req, res, next) => {
-  const token = req.cookies.token;
-  // console.log("value of token");
+  const authHeader = req.headers['authorization'];
+  const token = authHeader.split(' ')[1];
+   console.log(authHeader);
+
+  console.log(token);
   logger.info("token",token);
   if (!token) {
       return res.status(401).json({ error: "Unauthorized: Token is missing" });

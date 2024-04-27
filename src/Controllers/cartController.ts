@@ -20,7 +20,13 @@ export const cartController = {
         return res.status(404).json({ error: "User not found" });
       }
       logger.info(`Request received to get cart for ${userId} `);
-
+      const cart = await db.Cart.findOne({where: { userID: userId}})
+      if (!cart)
+        {
+          return res
+          .status(200)
+          .json({ message: "Cart is empty", cartItems: [] })
+        }
       const cartItems = await cartServices.getCartByUserId(Number(userId));
       logger.info(`Cart Item retrieved successfully for ${userId} `);
 
