@@ -177,7 +177,7 @@ export const loginUser = async (req: Request, res: Response) => {
 //Middleware to verify JWT token
 
 export const verifyToken = async (req, res, next) => {
-  const token = req.coookies.token;
+  const token = req.cookies.token;
   
    console.log(req);
   logger.info("token",token);
