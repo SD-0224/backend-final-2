@@ -16,7 +16,7 @@ async function seedTables() {
     await sequelize.sync({ force: true }); // Note: Use force: true for development only
     const categoryWithSLugs = categoriesData.map((categoriesData) => ({
       ...categoriesData,
-      slug: slugify(categoriesData.name,{ lower: true }),
+      slug: slugify(categoriesData.name, { lower: true }),
     }));
     await db.category.bulkCreate(categoryWithSLugs);
     // Seed brands
@@ -45,7 +45,7 @@ async function seedTables() {
     //Seed cartItems
     await db.CartItem.bulkCreate(fakeCartData);
 
-    console.log('Tables seeded successfully.');
+    console.log("Tables seeded successfully.");
   } catch (error) {
     console.error("Error seeding tables:", error);
   }

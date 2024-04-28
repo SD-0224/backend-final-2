@@ -1,7 +1,7 @@
 import * as db from "../Models/index";
 import { sequelize } from "../config/dbConfig";
 import { Request, Response } from "express";
-import {logger} from "../config/pino";
+import { logger } from "../config/pino";
 import categoryServices from "../Services/categoryServices";
 
 export const getAllCategories = async (req: Request, res: Response) => {

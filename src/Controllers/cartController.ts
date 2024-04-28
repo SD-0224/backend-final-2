@@ -20,13 +20,12 @@ export const cartController = {
         return res.status(404).json({ error: "User not found" });
       }
       logger.info(`Request received to get cart for ${userId} `);
-      const cart = await db.Cart.findOne({where: { userID: userId}})
-      if (!cart)
-        {
-          return res
+      const cart = await db.Cart.findOne({ where: { userID: userId } });
+      if (!cart) {
+        return res
           .status(200)
-          .json({ message: "Cart is empty", cartItems: [] })
-        }
+          .json({ message: "Cart is empty", cartItems: [] });
+      }
       const cartItems = await cartServices.getCartByUserId(Number(userId));
       logger.info(`Cart Item retrieved successfully for ${userId} `);
 
@@ -44,7 +43,6 @@ export const cartController = {
   },
   addItemsToCart: async (req: Request & { userID: number }, res: Response) => {
     try {
-      const token = req.cookies.token;
       const userId = req.userID;
       logger.info(`Checking if user with ID ${userId} exists in the cart`);
 
@@ -58,32 +56,6 @@ export const cartController = {
       }
       const productId = req.params.productID;
       const { quantity } = req.body;
-
-      // Log token retrieval
-      logger.info(`Token retrieved: ${token}`);
-
-      if (!token) {
-        logger.error("Invalid Authentication token");
-        return res
-          .status(401)
-          .json({ error: "UnAuthorized:Authentication token is missed" });
-      }
-
-      const decodedToken = jwt.decode(token);
-
-      logger.info(`Decoded token: ${JSON.stringify(decodedToken)}`);
-
-      if (
-        !decodedToken ||
-        !decodedToken.userId ||
-        decodedToken.userId !== userId
-      ) {
-        logger.error("Unauthorized: User not authenticated");
-        return res
-          .status(401)
-          .json({ error: "Unauthorized: User not authenticated" });
-      }
-
       // Check if the user exists
       const user = await db.User.findByPk(userId);
 
@@ -177,7 +149,7 @@ export const cartController = {
         logger.error("Validation error occurred  ", errors);
         return res.status(400).json({ errors: errors.array() });
       }
-      const {productId } = req.body;
+      const { productId } = req.body;
       const { userID } = req;
       if (!userID) {
         logger.error("Unauthorized: User can't delete items fom the cart");

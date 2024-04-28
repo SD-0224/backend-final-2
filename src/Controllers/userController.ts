@@ -35,8 +35,8 @@ export const registerNewUser = async (userData: any) => {
     }
 
     if (!validatePassword(password)) {
-      logger.error("Invalid password");
-      errors.push("Invalid password");
+      logger.error("Invalid password it should contain at least one uppercase-lowercase letter  and number ");
+      errors.push("Invalid password it should contain at least one uppercase-lowercase letter  and number");
     }
     if (!validateFirstName(firstName)) {
       logger.error("Invalid First Name");
@@ -88,11 +88,9 @@ export const register = async (req: any, res: any) => {
     } else {
       logger.info(`New user: ${UserInfo.email} registered successfully`);
       logger.info("New user registration successful");
-      const token: string = jwt.sign(
-        { userId: UserInfo.userID }, 
-        secretKey,
-        { expiresIn: "1d" }
-      );
+      const token: string = jwt.sign({ userId: UserInfo.userID }, secretKey, {
+        expiresIn: "1d",
+      });
       res.cookie("token", token, { httpOnly: true });
 
       return res.status(201).json({ user: UserInfo, token });
@@ -108,19 +106,15 @@ export const loginUser = async (req: Request, res: Response) => {
     const { password, email } = req.body;
     logger.info(`Attempting login user by an email${email}`);
     const errors = [];
-    if (!email)
-      {
-        logger.error("Invalid email");
-        errors.push("Email is required");
-
-      }
-      if (!password)
-        {
-          logger.error("Invalid password");
-          errors.push("password is required");
-  
-        }
-    let user:any;
+    if (!email) {
+      logger.error("Invalid email");
+      errors.push("Email is required");
+    }
+    if (!password) {
+      logger.error("Invalid password");
+      errors.push("password is required");
+    }
+    let user: any;
     if (validateEmail(email)) {
       user = await User.findOne({ where: { email: email } });
     } else {
@@ -131,13 +125,11 @@ export const loginUser = async (req: Request, res: Response) => {
     if (!user) {
       logger.error("User not found");
       errors.push("User not found");
-      if (errors.length > 0)
-        {
-          logger.error("Login failed:", errors.join(", "));
-  
-         return res.status(400).json({errors})
-        }
-  
+      if (errors.length > 0) {
+        logger.error("Login failed:", errors.join(", "));
+
+        return res.status(400).json({ errors });
+      }
     }
 
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
@@ -145,26 +137,20 @@ export const loginUser = async (req: Request, res: Response) => {
     if (!isPasswordCorrect) {
       logger.error("Wrong password!");
       errors.push("Password not correct");
-      
     }
-    if (errors.length > 0)
-      {
-        logger.error("Login failed:", errors.join(", "));
+    if (errors.length > 0) {
+      logger.error("Login failed:", errors.join(", "));
 
-       return res.status(400).json({errors})
-      }
+      return res.status(400).json({ errors });
+    }
 
-  
     logger.info("successful Login ");
-   
 
-    const token: string = jwt.sign(
-      { userId: user.userID }, 
-      secretKey,
-      { expiresIn: "1d" }
-    );
+    const token: string = jwt.sign({ userId: user.userID }, secretKey, {
+      expiresIn: "1d",
+    });
     const { password: _, ...userWithoutPassword } = user.toJSON();
-    userWithoutPassword.token=token;
+    userWithoutPassword.token = token;
     console.log("secretKey", secretKey);
     res.cookie("token", token, { httpOnly: true });
     res.status(200).json({ user: userWithoutPassword, token });
@@ -177,33 +163,31 @@ export const loginUser = async (req: Request, res: Response) => {
 //Middleware to verify JWT token
 
 export const verifyToken = async (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader.split(' ')[1];
-   console.log(authHeader);
-  console.log(token)
-  logger.info("token",token);
+  const authHeader = req.headers["authorization"];
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Unauthorized: Token is missing or invalid" });
+  }
+  const token = authHeader.split(" ")[1];
+  logger.info("token", token);
   if (!token) {
-      return res.status(401).json({ error: "Unauthorized: Token is missing" });
+    return res.status(401).json({ error: "Unauthorized: Token is missing" });
   }
   try {
-      const decoded = jwt.verify(token, secretKey);
-      req.userID = decoded.userId; // Set req.userID to decoded userId
-      next();
+    const decoded = jwt.verify(token, secretKey);
+    req.userID = decoded.userId; // Set req.userID to decoded userId
+    next();
   } catch (error) {
-      return res.status(401).json({ error: "Unauthorized: Invalid token" });
+    return res.status(401).json({ error: "Unauthorized: Invalid token" });
   }
 };
 
-
-export const logOutUser=async(req:Request,res:Response)=>{
+export const logOutUser = async (req: Request, res: Response) => {
   try {
-    res.cookie("token","",{expires:new Date(0),httpOnly:true});
+    res.cookie("token", "", { expires: new Date(0), httpOnly: true });
     logger.info("Log out for the user is successful");
-    res.status(200).json({message:"Log out successfully"});
-     
+    res.status(200).json({ message: "Log out successfully" });
   } catch (error) {
-    logger.error("Failed log out ",error);
-    res.status(500).json({error:"Internal server error"});
+    logger.error("Failed log out ", error);
+    res.status(500).json({ error: "Internal server error" });
   }
-
-}
+};

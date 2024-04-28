@@ -16,10 +16,10 @@ export const createOrder = async (
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      logger.error("Validation error occurred  ",errors);
+      logger.error("Validation error occurred  ", errors);
       return res.status(400).json({ errors: errors.array() });
     }
-    const { firstName, lastName, email, phoneNumber } = req.body
+    const { firstName, lastName, email, phoneNumber } = req.body;
     const { street, state, city, postalCode } = req.body;
     let token = req.cookies.token;
     if (!token) {
@@ -75,13 +75,11 @@ export const createOrder = async (
           }
         );
 
-        if (!productExist || productExist.quantity == 0)
-          {
-            logger.error("product doesn't exist");
-            return res.status(400).json({ error: `product doesn't exist` });
-          }    
-          grandTotal += element.subTotal;
-
+        if (!productExist || productExist.quantity == 0) {
+          logger.error("product doesn't exist");
+          return res.status(400).json({ error: `product doesn't exist` });
+        }
+        grandTotal += element.subTotal;
       })
     );
     let isPaid = false;
@@ -123,11 +121,11 @@ export const createOrder = async (
       where: { cartID: cart.cartID },
     });
     await transaction.commit();
-    logger.info("Delete the the cart content")
-   return res.status(200).json(newOrder);
+    logger.info("Delete the the cart content");
+    return res.status(200).json(newOrder);
   } catch (error) {
     await transaction.rollback();
-    logger.error("Error creating order", error)
+    logger.error("Error creating order", error);
     return res.status(error.status).json({ error: error.message });
   }
 };

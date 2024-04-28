@@ -2,8 +2,8 @@ import passport from "passport";
 import { User } from "../Models/user";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { registerNewUser } from "../Controllers/userController";
-import {logger} from "../config/pino";
-import dotenv from 'dotenv';
+import { logger } from "../config/pino";
+import dotenv from "dotenv";
 dotenv.config();
 passport.serializeUser((user, done) => {
   logger.info("Use serialization ");
@@ -11,11 +11,11 @@ passport.serializeUser((user, done) => {
 });
 passport.deserializeUser(async (id, done) => {
   try {
-    logger.info(`Deserializing user  Done`)
+    logger.info(`Deserializing user  Done`);
     const user = await User.findByPk(id);
     done(null, user);
   } catch (error) {
-    logger.error("Error deserializing user:", error)
+    logger.error("Error deserializing user:", error);
     done(error, null);
   }
 });
@@ -23,7 +23,7 @@ passport.deserializeUser(async (id, done) => {
 passport.use(
   new GoogleStrategy(
     {
-      clientID:process.env.clientIDAuth,
+      clientID: process.env.clientIDAuth,
       clientSecret: process.env.clientSecretAuth,
       callbackURL: "http://localhost:3000/auth/google/callback",
     },
@@ -37,15 +37,13 @@ passport.use(
             googleId: profile.id,
             email: profile.emails?.[0].value || "",
           });
-        
+
           if (newUser) {
             done(null, newUser);
           } else {
             logger.error("Failed to create a new user");
             done(new Error("Failed to create a new user"), null);
           }
-        
-        
         } else {
           done(null, user);
         }
