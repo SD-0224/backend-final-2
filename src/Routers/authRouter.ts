@@ -14,4 +14,4 @@ authRouter.get(
     successRedirect: "/",
     failureRedirect: "/login",
   })
-)
+);

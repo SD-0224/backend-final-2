@@ -15,7 +15,7 @@ export const whishListController = {
         logger.error("Token not found in cookies");
         return res.status(401).json({ error: "Unauthorized: Token not found" });
       }
-      const {productID } = req.body;
+      const { productID } = req.body;
       const userID = req.userID;
       if (!userID) {
         logger.error(
@@ -52,19 +52,17 @@ export const whishListController = {
     res: Response
   ) => {
     try {
-      const  userID  = req.userID;
+      const userID = req.userID;
       logger.info(`Get the list of favorites items for the user ${userID}`);
       const userWishList = await wishList.findAll({
         where: { userID: userID },
-        include: [{ model: Product, as: 'product' }]
+        include: [{ model: Product, as: "product" }],
       });
       logger.info("Whish list of items returned successfully");
-      res
-        .status(200)
-        .json({
-          message: "Whish list of items returned successfully",
-          userWishList,
-        });
+      res.status(200).json({
+        message: "Whish list of items returned successfully",
+        userWishList,
+      });
     } catch (error) {
       logger.error("Internal service error", error);
       res.status(500).json({ error: "Internal service error" });
