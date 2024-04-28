@@ -35,8 +35,8 @@ export const registerNewUser = async (userData: any) => {
     }
 
     if (!validatePassword(password)) {
-      logger.error("Invalid password");
-      errors.push("Invalid password");
+      logger.error("Invalid password it should contain at least one uppercase-lowercase letter  and number ");
+      errors.push("Invalid password it should contain at least one uppercase-lowercase letter  and number");
     }
     if (!validateFirstName(firstName)) {
       logger.error("Invalid First Name");
