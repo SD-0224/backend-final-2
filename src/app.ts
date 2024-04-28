@@ -20,7 +20,7 @@ import orderRouter from "./Routers/orderRouter";
 import pino from 'pino';
 import {config} from './config/pino';
 const client = require('prom-client')
-
+import {httpRequestDurationMicroseconds} from "../dist/Utils/metric";
 const app = express();
 const PORT = process.env.PORT || 3000;
  const logger = pino({
@@ -88,23 +88,28 @@ app.use('/wishList', whishListRouter)
 app.use('/orders', orderRouter)
 
 
-// Create a Histogram metric
-const httpRequestDurationMicroseconds = new client.Histogram({
-  name: 'http_request_duration_seconds',
-  help: 'Duration of HTTP requests in microseconds',//Description of the aim of the metric 
-  labelNames: ['method', 'route', 'code','route_name'],
-  buckets: [0.1, 0.3, 0.5, 0.7, 1, 3, 5, 7, 10]
-})
+//Create array of routes 
+const routeNames = {
+  '/metrics': 'Metrics',
+  '/products': 'Product',
+  '/brands': 'Brand',
+  '/categories': 'Category',
+  '/cart': 'Cart',
+  '/wishList': 'Wishlist',
+  '/orders': 'Order',
+};
+
 // Register the histogram
 register.registerMetric(httpRequestDurationMicroseconds)
 //GEt the metric of the app
 app.get('/metrics', async (req, res) => {
   try {
-    const route=req.originalUrl.split("?")[0];
-    //Start timing the request 
-    const end=httpRequestDurationMicroseconds.startTimer({route});
+    const route = req.originalUrl.split("?")[0];
+    const routeName = getRouteName(route); 
+    // Start timing the request
+    const end = httpRequestDurationMicroseconds.startTimer({ route, route_name: routeName });
     const metrics = await register.metrics();
-    //Stop timing the request
+    // Stop timing the request
     end();
     res.set('Content-Type', register.contentType);
     res.send(metrics);
@@ -114,7 +119,10 @@ app.get('/metrics', async (req, res) => {
   }
 });
 
-
+function getRouteName(route) {
+  const parts = route.split('/');
+  return parts[1] ? parts[1].charAt(0).toUpperCase() + parts[1].slice(1) : 'Unknown';
+}
 
 // Sync models with the database
 syncModels()
