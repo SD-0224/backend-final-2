@@ -10,11 +10,6 @@ export const whishListController = {
     res: Response
   ) => {
     try {
-      const token = req.cookies.token;
-      if (!token) {
-        logger.error("Token not found in cookies");
-        return res.status(401).json({ error: "Unauthorized: Token not found" });
-      }
       const { productID } = req.body;
       const userID = req.userID;
       if (!userID) {
