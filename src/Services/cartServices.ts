@@ -38,8 +38,10 @@ const getCartByUserId = async (userId: number): Promise<any> => {
 
 const syncCart = async (cartID: number, items: any) => {
   try {
-    const addedItems = []; // Array to store added cart items
-
+    const addedItems = []; // Array to store added cart items   
+    const deletedCount = await db.CartItem.destroy({
+      where: { cartID: cartID},
+    });
     for (const item of items) {
         // Create a new instance of CartItem model with item data
         const newCartItem = await db.CartItem.create({
