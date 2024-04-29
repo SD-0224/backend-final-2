@@ -13,13 +13,14 @@ import {
   validatePhoneNumber,
 } from "../Validators/UserHandler";
 import { validationResult } from "express-validator";
+import addressServices from "../Services/addressServices";
 
 cloudinary.config({
   cloud_name: process.env.Cloud_Name,
   api_key: process.env.Cloud_Key,
   api_secret: process.env.API_Secret,
 });
-
+const profileImage = "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png";
 export const getUserOrders = async (
   req: Request & { userID: Number },
   res: Response
@@ -121,7 +122,32 @@ export const uploadPhoto = async (
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
+export const deletePhoto = async (req: Request & { userID: Number }, res: Response) => {
+  try {
+    const userID = req.userID;
+    const user = await db.User.findByPk(Number(userID));
+    if (!user) {
+      logger.error("User not found");
+      return res.status(404).json({ error: "User not found" });
+    }
 
+    if (!user.image) {
+      logger.error("User does not have a photo to delete");
+      return res.status(400).json({ error: "User does not have a photo to delete" });
+    }
+
+    // Clear the image URL from the user's record
+    user.image = profileImage;
+    await user.save();
+
+    logger.info("Image deleted successfully");
+    res.status(200).json({ message: "Image deleted successfully" });
+  } catch (error) {
+    // Handle errors and send appropriate error response
+    logger.error("Error deleting photo", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 export const getDetails = async (
   req: Request & { userID: Number },
   res: Response
@@ -150,7 +176,7 @@ export const updateDetails = async (
 ) => {
   try {
     const userID = req.userID;
-    const { firstName, lastName, phoneNumber, email } = req.body;
+    const { firstName, lastName, phoneNumber, email, dateofBirth } = req.body;
     const errors = [];
     if (!email || email.trim() === "") {
       logger.error("Email is required");
@@ -173,6 +199,12 @@ export const updateDetails = async (
       logger.error("Invalid phone Number");
       errors.push("Invalid phone Number");
     }
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+  // Check if the input matches the expected format
+  if (!dateRegex.test(dateofBirth)) {
+    errors.push("Invalid Date");
+  }
 
     if (errors.length > 0) {
       logger.error("Update failed:", errors.join(", "));
@@ -191,7 +223,7 @@ export const updateDetails = async (
     user.lastName = lastName;
     user.phoneNumber = phoneNumber;
     user.email = email;
-
+    user.dateOfBirth = dateofBirth;
     await user.save();
     logger.info("User profile updated successfully");
     res
@@ -201,5 +233,52 @@ export const updateDetails = async (
     // Handle errors and send appropriate error response
     logger.error("Error Updating profile");
     res.status(error.status).json({ error: error.message });
+  }
+};
+export const createAddress = async (
+  req: Request & { userID: Number },
+  res: Response
+) => {
+  const transaction = await sequelize.transaction();
+  try {
+    // Validate the inputs
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      logger.error("Validation error occurred  ", errors);
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { street, state, city, postalCode } = req.body;
+    const userID  = req.userID;
+    if (!userID) {
+      logger.error("Unauthorized: User can't create the address ");
+      return res
+        .status(401)
+        .json({ error: "Unauthorized: User does not have permission" });
+    }
+    let existingAddress = await addressServices.getAddress({
+      userID,
+      street,
+      state,
+      city,
+      postalCode,
+    });
+
+    if (!existingAddress) {
+      existingAddress = await addressServices.createAddress(
+        {
+          userID,
+          street,
+          state,
+          city,
+          postalCode,
+        },
+        transaction
+      );
+    }
+    return res.status(200).json({message: "Successful address creation"});
+  } catch (error) {
+    await transaction.rollback();
+    logger.error("Error creating address", error);
+    return res.status(error.status).json({ error: error.message });
   }
 };

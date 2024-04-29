@@ -99,4 +99,4 @@ syncModels()
   });
 //DO NOT UNCOMMENT UNLESS WE LOSE DATA!!!!!
 //DONT UNCOMMENT I REPEAT!
-//seedTables();
+seedTables();

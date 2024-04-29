@@ -18,7 +18,7 @@ out/
 .env
 .env.local
 .env.*.local
-
+uploads
 # Ignore npm debug log
 npm-debug.log*
 

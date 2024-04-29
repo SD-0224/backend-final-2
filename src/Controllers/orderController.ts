@@ -21,12 +21,7 @@ export const createOrder = async (
     }
     const { firstName, lastName, email, phoneNumber } = req.body;
     const { street, state, city, postalCode } = req.body;
-    let token = req.cookies.token;
-    if (!token) {
-      logger.error("Token not found in cookies");
-      return res.status(401).json({ error: "Unauthorized: Token not found" });
-    }
-    const { userID } = req;
+    const userID  = req.userID;
     if (!userID) {
       logger.error("Unauthorized: User can't create the order ");
       return res
@@ -82,7 +77,7 @@ export const createOrder = async (
         grandTotal += element.subTotal;
       })
     );
-    let isPaid = false;
+    let status = "pending";
     const newOrder = await orderServices.createOrder(
       {
         userID,
@@ -92,7 +87,7 @@ export const createOrder = async (
         phoneNumber,
         addressID,
         grandTotal,
-        isPaid,
+        status,
       },
       transaction
     );
