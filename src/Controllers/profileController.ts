@@ -175,7 +175,7 @@ export const updateDetails = async (
 ) => {
   try {
     const userID = req.userID;
-    const { firstName, lastName, phoneNumber, email, dateofBirth } = req.body;
+    const { firstName, lastName, phoneNumber, email, dateOfBirth } = req.body;
     const errors = [];
     if (!email || email.trim() === "") {
       logger.error("Email is required");
@@ -199,9 +199,9 @@ export const updateDetails = async (
       errors.push("Invalid phone Number");
     }
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
+console.log(dateOfBirth)
   // Check if the input matches the expected format
-  if (!dateRegex.test(dateofBirth)) {
+  if (!dateRegex.test(dateOfBirth)) {
     errors.push("Invalid Date");
   }
 
@@ -222,7 +222,7 @@ export const updateDetails = async (
     user.lastName = lastName;
     user.phoneNumber = phoneNumber;
     user.email = email;
-    user.dateOfBirth = dateofBirth;
+    user.dateOfBirth = dateOfBirth;
     await user.save();
     logger.info("User profile updated successfully");
     res
