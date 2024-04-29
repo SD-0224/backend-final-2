@@ -137,7 +137,6 @@ export const getDetails = async (
     }
     logger.info("Request to get user details is successful");
     res.status(200).json(user);
-    res.status(200).json();
   } catch (error) {
     // Handle errors and send appropriate error response
     logger.error("Error getting details for user");
