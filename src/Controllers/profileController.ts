@@ -10,6 +10,7 @@ import {
   validateEmail,
   validateFirstName,
   validateLastName,
+  validatePassword,
   validatePhoneNumber,
 } from "../Validators/UserHandler";
 import { validationResult } from "express-validator";
@@ -72,6 +73,8 @@ export const changePassword = async (
     const current = req.body.currentPassword;
     const newPassword = req.body.newPassword;
     const userID = req.userID;
+      const errors = [];
+
 
     const user = await db.User.findByPk(Number(userID));
     if (!user) {
@@ -81,8 +84,18 @@ export const changePassword = async (
     const isPasswordCorrect = await bcrypt.compare(current, user.password);
     if (!isPasswordCorrect) {
       logger.error("Wrong password!");
-      return res.status(400).json({ error: "Wrong password!" });
+      errors.push("Incorrect password");
     }
+    if (!validatePassword(newPassword)) {
+      logger.error("Invalid new password it should contain at least one uppercase-lowercase letter  and number ");
+      errors.push("Invalid password it should contain at least one uppercase-lowercase letter  and number");
+
+    }
+    if (errors.length > 0)
+      {
+        logger.error("Update failed:", errors.join(", "));
+        return res.status(400).json({ errors });
+      }
     const salt = genSaltSync(10);
     const hash = bcrypt.hashSync(newPassword, salt);
     user.password = hash;
