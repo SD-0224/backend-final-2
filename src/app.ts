@@ -20,9 +20,12 @@ import orderRouter from "./Routers/orderRouter";
 import profileRouter from "./Routers/profileRouter";
 import pino from "pino";
 import { config } from "./config/pino";
+import { StripePaymentProcessor } from "./Payment/StripePaymentProcessor";
 const { collectDefaultMetrics, register } = require("prom-client");
 const app = express();
 const PORT = process.env.PORT || 3000;
+const stripKey=process.env.Stripe_API_Key;
+const stripeProcessor = new StripePaymentProcessor();
 const logger = pino({
   level: config.level || "info",
   formatters: {
@@ -70,6 +73,7 @@ app.use(
 );
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../src/views"));
 app.use("/user", userRouter);
