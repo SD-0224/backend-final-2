@@ -238,7 +238,6 @@ export const createAddress = async (
   req: Request & { userID: Number },
   res: Response
 ) => {
-  const transaction = await sequelize.transaction();
   try {
     // Validate the inputs
     const errors = validationResult(req);
@@ -271,12 +270,10 @@ export const createAddress = async (
           city,
           postalCode,
         },
-        transaction
       );
     }
     return res.status(200).json({message: "Successful address creation"});
   } catch (error) {
-    await transaction.rollback();
     logger.error("Error creating address", error);
     return res.status(error.status).json({ error: error.message });
   }
