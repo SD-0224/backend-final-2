@@ -1,67 +1,74 @@
 // Import Sequelize and models
-import { cart } from "./cart"
+import { Cart } from "./cart"
 import { wishList } from "./wishlist"
 import { review } from "./review"
 import { order } from "./order"
 import { address } from "./address"
 import { orderItem } from "./orderitem"
-import { product } from "./product"
+import { Product } from "./product"
 import { images } from "./images"
 import { brand } from "./brand"
 import { category } from "./category"
-import { user} from "./user"
+import { User} from "./user"
 import { payment} from "./payment"
-import { cartItem } from "./cartItem"
+import { CartItem } from "./cartItem"
 
 // Define associations
 
 //category and brand
-category.hasMany(product, { foreignKey: 'categoryID' })
-brand.hasMany(product, { foreignKey: 'brandID' })
+category.hasMany(Product, { foreignKey: 'categoryID' })
+brand.hasMany(Product, { foreignKey: 'brandID' })
 
-product.belongsTo(brand, { foreignKey: 'brandID' });
-product.belongsTo(category, { foreignKey: 'categoryID' });
+Product.belongsTo(brand, { foreignKey: 'brandID' });
+Product.belongsTo(category, { foreignKey: 'categoryID' });
 //Reviews 
-product.hasMany(review, { foreignKey: 'productID' })
-review.belongsTo(product, { foreignKey: 'productID' })
+Product.hasMany(review, { foreignKey: 'productID' })
+review.belongsTo(Product, { foreignKey: 'productID' })
+
+Product.hasMany(review, { foreignKey: 'productID' })
+review.belongsTo(Product, { foreignKey: 'productID' })
+User.hasMany(review, { foreignKey: 'userID' })
+review.belongsTo(User, { foreignKey: 'userID' })
 //Order
 order.hasMany(orderItem, { foreignKey: 'orderID' });
 orderItem.belongsTo(order, { foreignKey: 'orderID' });
 
-orderItem.belongsTo(product, { foreignKey: 'productID' });
+orderItem.belongsTo(Product, { foreignKey: 'productID' });
 //address
-user.hasMany(address, { foreignKey: 'userID' });
-address.belongsTo(user, { foreignKey: 'userID' });
+User.hasMany(address, { foreignKey: 'userID' });
+address.belongsTo(User, { foreignKey: 'userID' });
 //cartItem
-cartItem.hasMany(cart, { foreignKey: 'cartID' });
-cart.belongsTo(cartItem, { foreignKey: 'cartID' });
-cart.belongsTo(product, { foreignKey: 'productID' })
-product.hasMany(cart, { foreignKey: 'productID' })
+CartItem.hasMany(Cart, { foreignKey: 'cartID' });
+CartItem.belongsTo(Product,{foreignKey: 'productID'})
+Cart.belongsTo(CartItem, { foreignKey: 'cartID' });
+Cart.belongsTo(Product, { foreignKey: 'productID' })
+Product.hasMany(Cart, { foreignKey: 'productID' })
+Product.hasMany(CartItem, { foreignKey: 'productID' });
 //cart
-user.hasMany(cart, { foreignKey: 'userID' });
-cart.belongsTo(user, { foreignKey: 'userID' });
+User.hasMany(Cart, { foreignKey: 'userID' });
+Cart.belongsTo(User, { foreignKey: 'userID' });
 
 //Wishlist
-user.hasMany(wishList, { foreignKey: 'userID' });
-wishList.belongsTo(user, { foreignKey: 'userID' });
-product.hasMany(wishList, { foreignKey: 'productID' });
-wishList.belongsTo(product, { foreignKey: 'productID' });
+User.hasMany(wishList, { foreignKey: 'userID' });
+wishList.belongsTo(User, { foreignKey: 'userID' });
+Product.hasMany(wishList, { foreignKey: 'productID' });
+wishList.belongsTo(Product, { foreignKey: 'productID' });
 
 //Payment
-user.hasMany(payment, { foreignKey: 'userID' });
-payment.belongsTo(user, { foreignKey: 'userID' });
+User.hasMany(payment, { foreignKey: 'userID' });
+payment.belongsTo(User, { foreignKey: 'userID' });
 
 payment.hasMany(order, { foreignKey: 'paymentID' });
 order.belongsTo(payment, { foreignKey: 'paymentID' });
 //Image
-product.hasMany(images, { foreignKey: 'productID' });
-images.belongsTo(product, { foreignKey: 'productID' });
+Product.hasMany(images, { foreignKey: 'productID' });
+images.belongsTo(Product, { foreignKey: 'productID' });
 
 //address
-user.hasMany(address, { foreignKey: 'userID' })
-address.belongsTo(user, { foreignKey: 'userID' })
+User.hasMany(address, { foreignKey: 'userID' })
+address.belongsTo(User, { foreignKey: 'userID' })
 order.belongsTo(address, { foreignKey: 'addressID' });
 address.hasMany(order, { foreignKey: 'addressID' });
 
 
-export { user, address, cart, wishList, payment,product, order, orderItem, review, images,  brand, category};
+export { User, address, Cart, wishList,CartItem, payment,Product, order, orderItem, review, images,  brand, category};

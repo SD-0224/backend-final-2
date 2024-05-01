@@ -4,33 +4,50 @@ import { brandsData } from "./brandFake";
 import { imagesData } from "./imageFake";
 import { reviewData } from "./reviewFake";
 import { productsData } from "./productFaker";
+import { fakeCartData } from "./cartItemFake";
 import * as db from "../Models/index";
-async function seedTables(
-) {
+import { userData } from "./userFake";
+import { CartData } from "./cartFake";
+import slugify from "slugify";
+async function seedTables() {
   try {
     // Assuming you have defined models and their associations
-  
-    // Sync all models with the database
-    await sequelize.sync({ force: true }); // Note: Use force: true for development only
-  
     // Seed categories
-    await db.category.bulkCreate(categoriesData);
-  
+    await sequelize.sync({ force: true }); // Note: Use force: true for development only
+    const categoryWithSLugs = categoriesData.map((categoriesData) => ({
+      ...categoriesData,
+      slug: slugify(categoriesData.name, { lower: true }),
+    }));
+    await db.category.bulkCreate(categoryWithSLugs);
     // Seed brands
-    await db.brand.bulkCreate(brandsData);
-  
+    const brandsWithSlugs = brandsData.map((brandData) => ({
+      ...brandData,
+      slug: slugify(brandData.name, { lower: true }),
+    }));
+    await db.brand.bulkCreate(brandsWithSlugs);
     // Seed images
-  
     // Seed products
-    await db.product.bulkCreate(productsData);
+    const productsWithSlugs = productsData.map((productsData) => ({
+      ...productsData,
+      slug: slugify(productsData.title, { lower: true }),
+    }));
+    await db.Product.bulkCreate(productsWithSlugs);
     await db.images.bulkCreate(imagesData);
-
+    await db.User.bulkCreate(userData);
     // Seed reviews
     await db.review.bulkCreate(reviewData);
-  
-    console.log('Tables seeded successfully.');
+
+    //Seed users
+    await db.User.bulkCreate(userData);
+
+    //seed carts
+    await db.Cart.bulkCreate(CartData);
+    //Seed cartItems
+    await db.CartItem.bulkCreate(fakeCartData);
+
+    console.log("Tables seeded successfully.");
   } catch (error) {
-    console.error('Error seeding tables:', error);
+    console.error("Error seeding tables:", error);
   }
 }
 

@@ -4,8 +4,13 @@ import { DataTypes, Model } from "sequelize";
 interface orderAttributes extends Model {
   orderID: number;
   userID: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
   addressID: number;
-  isPaid: boolean;
+  grandTotal: number;
+  status: string;
 }
 
 const order = sequelize.define<orderAttributes>('orderDetails', {
@@ -18,16 +23,36 @@ const order = sequelize.define<orderAttributes>('orderDetails', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  firstName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  lastName: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  phoneNumber: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   addressID: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  isPaid: {
-    type: DataTypes.BOOLEAN,
+  grandTotal: {
+    type: DataTypes.FLOAT,
+    allowNull: false
+  },
+  status: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
 }, {
-  timestamps: false,
+  timestamps: true,
   tableName: 'orderDetails'
 });
 
