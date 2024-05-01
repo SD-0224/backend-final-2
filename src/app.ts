@@ -77,7 +77,7 @@ app.use("/orders", orderRouter);
 syncModels()
   .then(() => {
     console.log("Database synced successfully");
-    app.listen(PORT, process.env.HOST || 'localhost', () => {
+    app.listen(PORT, "0.0.0.0", () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })
