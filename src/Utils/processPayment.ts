@@ -16,25 +16,25 @@ class StripeSingleton {
     return StripeSingleton.instance;
   }
 
-  public static async payWithVisaCard(
-    amount: number,
-    visaToken: string
-  ): Promise<boolean> {
-    try {
-      const stripe = StripeSingleton.getInstance();
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount,
-        currency: "usd",
-        payment_method: visaToken,
-        confirm: true,
+//   public static async payWithVisaCard(
+//     amount: number,
+//     visaToken: string
+//   ): Promise<boolean> {
+//     try {
+//       const stripe = StripeSingleton.getInstance();
+//       const paymentIntent = await stripe.paymentIntents.create({
+//         amount,
+//         currency: "usd",
+//         payment_method: visaToken,
+//         confirm: true,
         
-      });
-      return true;
-    } catch (error) {
-      logger.error("Visa Card Pay failed payment:", error);
-      return false;
-    }
-  }
+//       });
+//       return true;
+//     } catch (error) {
+//       logger.error("Visa Card Pay failed payment:", error);
+//       return false;
+//     }
+//   }
 }
 
 export default StripeSingleton;
