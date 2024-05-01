@@ -21,7 +21,7 @@ import profileRouter from "./Routers/profileRouter";
 import pino from "pino";
 import { config } from "./config/pino";
 const app = express();
-const PORT = 3000;
+const PORT = 8080;
 const logger = pino({
   level: config.level || "info",
   formatters: {
