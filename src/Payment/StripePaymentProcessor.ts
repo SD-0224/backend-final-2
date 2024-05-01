@@ -12,6 +12,8 @@ export class StripePaymentProcessor implements PaymentProcessor {
   }
   async payWithUPI(amount: number, upiId: string): Promise<boolean> {
     try {
+      amount = Math.round(amount * 100)
+
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -31,6 +33,8 @@ export class StripePaymentProcessor implements PaymentProcessor {
     amazonPayToken: string
   ): Promise<boolean> {
     try {
+      amount = Math.round(amount * 100)
+
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -50,6 +54,8 @@ export class StripePaymentProcessor implements PaymentProcessor {
     cardToken: string
   ): Promise<boolean> {
     try {
+      amount = Math.round(amount * 100)
+
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -68,6 +74,8 @@ export class StripePaymentProcessor implements PaymentProcessor {
     applePayToken: string
   ): Promise<boolean> {
     try {
+      amount = Math.round(amount * 100)
+
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -86,6 +94,8 @@ export class StripePaymentProcessor implements PaymentProcessor {
     googlePayToken: string
   ): Promise<boolean> {
     try {
+      amount = Math.round(amount * 100)
+
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -101,6 +111,8 @@ export class StripePaymentProcessor implements PaymentProcessor {
   }
   async payWithPayTm(amount: number, payTmToken: string): Promise<boolean> {
     try {
+      amount = Math.round(amount * 100)
+
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -116,6 +128,8 @@ export class StripePaymentProcessor implements PaymentProcessor {
   }
   async payWithPhonePe(amount: number, phonePeToken: string): Promise<boolean> {
     try {
+      amount = Math.round(amount * 100)
+
       const paymentIntent = await this.stripe.paymentIntents.create({
         amount,
         currency: "usd",
@@ -130,18 +144,22 @@ export class StripePaymentProcessor implements PaymentProcessor {
     }
   }
   async payWithVisaCard(amount: number, visaToken: string): Promise<boolean> {
-    console.log(visaToken)
-    const paymentIntent = await this.stripe.paymentIntents.create({
-      amount,
-      currency: "usd",
-      payment_method_types: ["visa"],
-      payment_method: visaToken,
-      confirm: true,
-    });
-    return paymentIntent.status === "succeeded";
-  }
+    try
+    {
+      console.log(visaToken)
+      amount = Math.round(amount * 100)
+      const paymentIntent = await this.stripe.paymentIntents.create({
+        amount,
+        currency: "usd",
+        payment_method: visaToken,
+        confirm: true,
+      });
+      return paymentIntent.status === "succeeded";
+    }
+   
   catch(error) {
     logger.error("Visa Card Pay failed payment:", error);
     return false;
   }
+}
 }
