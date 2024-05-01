@@ -90,6 +90,7 @@ app.use("/cart", cartRouter);
 app.use("/wishList", whishListRouter);
 app.use("/profile", profileRouter);
 app.use("/orders", orderRouter);
+
 // Sync models with the database
 syncModels()
   .then(() => {

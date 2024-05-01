@@ -7,12 +7,17 @@ import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
+import { StripePaymentProcessor } from "../Payment/StripePaymentProcessor";
+const stripeProcessor = new StripePaymentProcessor();
+
 export const createOrder = async (
   req: Request & { userID: Number },
   res: Response
 ) => {
   const transaction = await sequelize.transaction();
-  try {
+  //Define the payment method for the order
+  const paymentMethod = req.body.paymentMethod;
+    try {
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -83,6 +88,45 @@ export const createOrder = async (
       })
     );
     let isPaid = false;
+//Choose the option of the product's payment method
+let paymentToken;
+switch(paymentMethod){
+  case'AmazonPay':
+paymentToken =req.body.amazonToken;
+await stripeProcessor.payWithAmazonPay(grandTotal,paymentToken);
+break;
+case 'UPI':
+  paymentToken =req.body.upiId;
+await stripeProcessor.payWithUPI(grandTotal,paymentToken);
+break;
+case 'GooglePay':
+  paymentToken =req.body.googlePayToken;
+await stripeProcessor.payWithGooglePay(grandTotal,paymentToken);
+break;
+case 'ApplePay':
+  paymentToken =req.body.appleToken;
+await stripeProcessor.payWithApplePay(grandTotal,paymentToken);
+break;
+case 'Card':
+  paymentToken =req.body.cardToken;
+await stripeProcessor.payWithCreditOrDebitCArd(grandTotal,paymentToken);
+break;
+case 'PhonePe':
+  paymentToken =req.body.phonePeToken;
+await stripeProcessor.payWithPhonePe(grandTotal,paymentToken);
+break;
+case 'PayTm':
+  paymentToken =req.body.payTmToken;
+await stripeProcessor.payWithPayTm(grandTotal,paymentToken);
+break;
+case 'VisaPay':
+  paymentToken =req.body.visaToken;
+await stripeProcessor.payWithVisaCard(grandTotal,paymentToken);
+break;
+default:
+  return res.status(400).json({error:"Invalid payment token to order"})
+}
+
     const newOrder = await orderServices.createOrder(
       {
         userID,

@@ -6,11 +6,13 @@ import { StripePaymentProcessor } from "../Payment/StripePaymentProcessor";
 dotenv.config();
 const stripeProcessor = new StripePaymentProcessor();
 export const paymentController = {
+    //paymentMethod token
+    //amount calculation  
   payWithUPI: async (req: Request, res: Response) => {
     try {
       const { amount, apiURI } = req.body;
       const success = await stripeProcessor.payWithUPI(amount, apiURI);
-      res.json({ success });
+      return res.json({ success });
     } catch (error) {
       logger.error("failed payment");
       res.sendStatus(400).json({ error: "Failed payment " });
@@ -23,7 +25,7 @@ export const paymentController = {
         amount,
         amazonToken
       );
-      res.json({ success });
+      return res.json({ success });
     } catch (error) {
       logger.error("Failed payment", error);
       res.json({ error: "failed payment " });
@@ -33,7 +35,7 @@ export const paymentController = {
     try {
       const { amount, appleToken } = req.body;
       const success = await stripeProcessor.payWithApplePay(amount, appleToken);
-      res.json({ success });
+      return res.json({ success });
     } catch (error) {
       logger.error("Failed payment", error);
       res.json({ error: "failed payment " });
@@ -46,6 +48,7 @@ export const paymentController = {
         amount,
         googleToken
       );
+      return res.json({success});
     } catch (error) {
       logger.error("Failed payment", error);
       res.json({ error: "Failed Payment " });
@@ -58,6 +61,7 @@ export const paymentController = {
         amount,
         creditToken
       );
+      return res.json({success});
     } catch (error) {
       logger.error("Failed payment", error);
       res.json({ error: "Failed Payment " });
@@ -67,6 +71,7 @@ export const paymentController = {
     try {
       const { amount, phoneToken } = req.body;
       const success = await stripeProcessor.payWithPhonePe(amount, phoneToken);
+      return res.json({success});
     } catch (error) {
       logger.error("Failed payment", error);
       res.json({ error: "Failed Payment " });
@@ -76,6 +81,7 @@ export const paymentController = {
     try {
       const { amount, payTmToken } = req.body;
       const success = await stripeProcessor.payWithPayTm(amount, payTmToken);
+      return res.json({success});
     } catch (error) {
       logger.error("Failed payment", error);
       res.json({ error: "Failed Payment " });
