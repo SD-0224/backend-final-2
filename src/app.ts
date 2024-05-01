@@ -20,8 +20,10 @@ import orderRouter from "./Routers/orderRouter";
 import profileRouter from "./Routers/profileRouter";
 import pino from "pino";
 import { config } from "./config/pino";
+const { collectDefaultMetrics, register } = require("prom-client");
+
 const app = express();
-const PORT = 8080;
+const PORT = 3000;
 const logger = pino({
   level: config.level || "info",
   formatters: {
@@ -32,6 +34,7 @@ const logger = pino({
   timestamp: pino.stdTimeFunctions.isoTime,
 });
 logger.info("Application started");
+
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -63,7 +66,6 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../src/views"));
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
-
 // Define routes or other middleware here
 app.use("/products", productRouter);
 app.use("/brands", brandRouter);
@@ -72,12 +74,16 @@ app.use("/cart", cartRouter);
 app.use("/wishList", whishListRouter);
 app.use("/profile", profileRouter);
 app.use("/orders", orderRouter);
-
+collectDefaultMetrics();
+app.get("/metrics", (req, res) => {
+  res.set("Content-Type", register.contentType);
+  res.end(register.metrics());
+});
 // Sync models with the database
 syncModels()
   .then(() => {
     console.log("Database synced successfully");
-    app.listen(PORT, "0.0.0.0", () => {
+    app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })
