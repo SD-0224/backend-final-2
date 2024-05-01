@@ -7,6 +7,11 @@ import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
+import Stripe from 'stripe';
+const stripe = new Stripe(process.env.Stripe_API_Key, {
+});
+
+
 export const createOrder = async (
   req: Request & { userID: Number },
   res: Response
@@ -83,6 +88,26 @@ export const createOrder = async (
     );
     const amount = grandTotal * 100; // Convert grand total to cents (Stripe requires amounts in smallest currency unit)
     const token = req.body.visaToken;
+      const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: 'usd',
+      payment_method: token,
+      confirm: true,
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'never'
+      }
+    });
+    let status = "pending";
+    const paymentSuccess = db.payment.create({
+      userID: userID, 
+      paymentAmount: grandTotal,
+      paymentMethod: paymentMethod
+    });
+    if (paymentIntent.status !== 'succeeded')
+    {
+      return res.status(400).json({error:"Invalid payment"})
+    }
     const newOrder = await orderServices.createOrder(
       {
         userID,
