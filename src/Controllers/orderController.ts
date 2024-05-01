@@ -99,15 +99,6 @@ export const createOrder = async (
       }
     });
     let status = "pending";
-    const paymentSuccess = db.payment.create({
-      userID: userID, 
-      paymentAmount: grandTotal,
-      paymentMethod: paymentMethod
-    });
-    if (paymentIntent.status !== 'succeeded')
-    {
-      return res.status(400).json({error:"Invalid payment"})
-    }
     const newOrder = await orderServices.createOrder(
       {
         userID,
