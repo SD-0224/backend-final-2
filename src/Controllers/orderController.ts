@@ -8,9 +8,7 @@ import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
 import Stripe from 'stripe';
-const stripe = new Stripe(process.env.Stripe_API_Key, {
-  apiVersion: '2024-04-10', // Ensure the API version is up to date
-});
+
 
 
 export const createOrder = async (

@@ -22,7 +22,6 @@ import { config } from "./config/pino";
 import { collectDefaultMetrics, register } from "prom-client";
 import Stripe from 'stripe';
 const stripe = new Stripe(process.env.Stripe_API_Key, {
-  apiVersion: '2024-04-10', // Ensure the API version is up to date
 });
 const app = express();
 const PORT = 3000;
