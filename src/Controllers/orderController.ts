@@ -7,6 +7,7 @@ import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
+import StripeSingleton from "../Utils/processPayment";
 
 export const createOrder = async (
   req: Request & { userID: Number },
@@ -14,6 +15,7 @@ export const createOrder = async (
 ) => {
   const transaction = await sequelize.transaction();
   //Define the payment method for the order
+  const paymentMethod = req.body.paymentMethod;
   try {
     // Validate the inputs
     const errors = validationResult(req);
@@ -81,6 +83,8 @@ export const createOrder = async (
       })
     );
     const amount = grandTotal * 100; // Convert grand total to cents (Stripe requires amounts in smallest currency unit)
+    const token = req.body.visaToken as string;
+    await StripeSingleton.payWithVisaCard(amount, token); 
     let status = "pending";
     const newOrder = await orderServices.createOrder(
       {
@@ -128,23 +132,3 @@ export const createOrder = async (
     return res.status(500).json({ error: error.message });
   }
 };
-// const payWithVisaCard = async (amount: number, visaToken: string): Promise<boolean>  =>{
-//   try {
-//     const stripe = StripeSingleton.getInstance();
-//     const paymentIntent = await stripe.paymentIntents.create({
-//       amount,
-//       currency: "usd",
-//       payment_method_types: ["visa"],
-//       payment_method: visaToken,
-//       confirm: true,
-//       automatic_payment_methods: {
-//         enabled: true,
-//         allow_redirects: 'never'
-//       }
-//     });
-//     return paymentIntent.status === "succeeded";
-//   } catch (error) {
-//     logger.error("Visa Card Pay failed payment:", error);
-//     return false;
-//   }
-// }
