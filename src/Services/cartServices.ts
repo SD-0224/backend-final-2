@@ -1,4 +1,3 @@
-import { options } from "joi";
 import * as db from "../Models/index";
 import { sequelize } from "../config/dbConfig";
 import { productAttributes } from "../Models/product";
