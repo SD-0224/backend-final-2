@@ -7,10 +7,8 @@ import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
-import Stripe from 'stripe';
-const stripe = new Stripe(process.env.Stripe_API_Key, {
-});
-
+import Stripe from "stripe";
+const stripe = new Stripe(process.env.Stripe_API_Key, {});
 
 export const createOrder = async (
   req: Request & { userID: Number },
@@ -19,7 +17,7 @@ export const createOrder = async (
   const transaction = await sequelize.transaction();
   //Define the payment method for the order
   const paymentMethod = req.body.paymentMethod;
-    try {
+  try {
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -28,9 +26,9 @@ export const createOrder = async (
     }
     const { firstName, lastName, email, phoneNumber } = req.body;
     const { street, state, city, postalCode } = req.body;
-    const paymentMethod = req.body.paymentMethod;
+    const token = req.body.visaToken;
 
-    const userID  = req.userID;
+    const userID = req.userID;
     if (!userID) {
       logger.error("Unauthorized: User can't create the order ");
       return res
@@ -87,17 +85,7 @@ export const createOrder = async (
       })
     );
     const amount = grandTotal * 100; // Convert grand total to cents (Stripe requires amounts in smallest currency unit)
-    const token = req.body.visaToken;
-      const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency: 'usd',
-      payment_method: token,
-      confirm: true,
-      automatic_payment_methods: {
-        enabled: true,
-        allow_redirects: 'never'
-      }
-    });
+
     let status = "pending";
     const newOrder = await orderServices.createOrder(
       {
