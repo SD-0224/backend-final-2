@@ -7,8 +7,6 @@ import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
-import Stripe from "stripe";
-
 
 export const createOrder = async (
   req: Request & { userID: Number },
