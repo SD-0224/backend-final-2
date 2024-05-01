@@ -130,17 +130,18 @@ export class StripePaymentProcessor implements PaymentProcessor {
     }
   }
   async payWithVisaCard(amount: number, visaToken: string): Promise<boolean> {
+    console.log(visaToken)
     const paymentIntent = await this.stripe.paymentIntents.create({
-        amount,
-        currency: "usd",
-        payment_method_types: ["visa"],
-        payment_method: visaToken,
-        confirm: true,
-      });
-      return paymentIntent.status === "succeeded";
-    } catch (error) {
-      logger.error("Visa Card Pay failed payment:", error);
-      return false;
-    }
+      amount,
+      currency: "usd",
+      payment_method_types: ["visa"],
+      payment_method: visaToken,
+      confirm: true,
+    });
+    return paymentIntent.status === "succeeded";
   }
-
+  catch(error) {
+    logger.error("Visa Card Pay failed payment:", error);
+    return false;
+  }
+}

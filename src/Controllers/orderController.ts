@@ -120,7 +120,11 @@ break;
 default:
   return res.status(400).json({error:"Invalid payment token to order"})
 }
-
+  const paymentSuccess = db.payment.create({
+    userID: userID, 
+    paymentAmount: grandTotal,
+    paymentMethod: paymentMethod
+  });
     let status = "pending";
     const newOrder = await orderServices.createOrder(
       {
@@ -165,6 +169,6 @@ default:
   } catch (error) {
     await transaction.rollback();
     logger.error("Error creating order", error);
-    return res.status(error.status).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
