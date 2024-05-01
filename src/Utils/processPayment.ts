@@ -2,7 +2,8 @@
 
 import Stripe from "stripe";
 import { logger } from "../config/pino";
-
+import dotenv from "dotenv";
+dotenv.config();
 class StripeSingleton {
   private static instance: Stripe | null = null;
 
