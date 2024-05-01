@@ -7,8 +7,11 @@ import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
-import { StripePaymentProcessor } from "../Payment/StripePaymentProcessor";
-const stripeProcessor = new StripePaymentProcessor();
+import Stripe from 'stripe';
+const stripe = new Stripe(process.env.Stripe_API_Key, {
+  apiVersion: '2024-04-10', // Ensure the API version is up to date
+});
+
 
 export const createOrder = async (
   req: Request & { userID: Number },
@@ -26,6 +29,8 @@ export const createOrder = async (
     }
     const { firstName, lastName, email, phoneNumber } = req.body;
     const { street, state, city, postalCode } = req.body;
+    const paymentMethod = req.body.paymentMethod;
+
     const userID  = req.userID;
     if (!userID) {
       logger.error("Unauthorized: User can't create the order ");
@@ -82,50 +87,28 @@ export const createOrder = async (
         grandTotal += element.subTotal;
       })
     );
-//Choose the option of the product's payment method
-let paymentToken;
-switch(paymentMethod){
-  case'AmazonPay':
-paymentToken =req.body.amazonToken;
-await stripeProcessor.payWithAmazonPay(grandTotal,paymentToken);
-break;
-case 'UPI':
-  paymentToken =req.body.upiId;
-await stripeProcessor.payWithUPI(grandTotal,paymentToken);
-break;
-case 'GooglePay':
-  paymentToken =req.body.googlePayToken;
-await stripeProcessor.payWithGooglePay(grandTotal,paymentToken);
-break;
-case 'ApplePay':
-  paymentToken =req.body.appleToken;
-await stripeProcessor.payWithApplePay(grandTotal,paymentToken);
-break;
-case 'Card':
-  paymentToken =req.body.cardToken;
-await stripeProcessor.payWithCreditOrDebitCArd(grandTotal,paymentToken);
-break;
-case 'PhonePe':
-  paymentToken =req.body.phonePeToken;
-await stripeProcessor.payWithPhonePe(grandTotal,paymentToken);
-break;
-case 'PayTm':
-  paymentToken =req.body.payTmToken;
-await stripeProcessor.payWithPayTm(grandTotal,paymentToken);
-break;
-case 'VisaPay':
-  paymentToken =req.body.visaToken;
-await stripeProcessor.payWithVisaCard(grandTotal,paymentToken);
-break;
-default:
-  return res.status(400).json({error:"Invalid payment token to order"})
-}
-  const paymentSuccess = db.payment.create({
-    userID: userID, 
-    paymentAmount: grandTotal,
-    paymentMethod: paymentMethod
-  });
+    const amount = grandTotal * 100; // Convert grand total to cents (Stripe requires amounts in smallest currency unit)
+    const token = req.body.visaToken;
+      const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: 'usd',
+      payment_method: token,
+      confirm: true,
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'never'
+      }
+    });
     let status = "pending";
+    const paymentSuccess = db.payment.create({
+      userID: userID, 
+      paymentAmount: grandTotal,
+      paymentMethod: paymentMethod
+    });
+    if (paymentIntent.status !== 'succeeded')
+    {
+      return res.status(400).json({error:"Invalid payment"})
+    }
     const newOrder = await orderServices.createOrder(
       {
         userID,
