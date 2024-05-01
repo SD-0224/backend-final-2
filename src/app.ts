@@ -20,9 +20,12 @@ import orderRouter from "./Routers/orderRouter";
 import profileRouter from "./Routers/profileRouter";
 import pino from "pino";
 import { config } from "./config/pino";
+import { StripePaymentProcessor } from "./Payment/StripePaymentProcessor";
 const { collectDefaultMetrics, register } = require("prom-client");
 const app = express();
 const PORT = process.env.PORT || 3000;
+const stripKey=process.env.Stripe_API_Key;
+const stripeProcessor = new StripePaymentProcessor();
 const logger = pino({
   level: config.level || "info",
   formatters: {
@@ -34,10 +37,17 @@ const logger = pino({
 });
 logger.info("Application started");
 collectDefaultMetrics();
-app.get("/metrics", (req, res) => {
+app.get("/metrics", async function (req, res) {
   res.set("Content-Type", register.contentType);
-  res.end(register.metrics());
+  try {
+      const metrics = await register.metrics();
+      res.end(metrics);
+  } catch (error) {
+      console.error("Error getting metrics:", error);
+      res.status(500).send("Error getting metrics");
+  }
 });
+
 const test = db.address;
 app.use(
   cors({
@@ -70,6 +80,7 @@ app.use(
 );
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
+
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../src/views"));
 app.use("/user", userRouter);
@@ -86,6 +97,7 @@ app.use("/cart", cartRouter);
 app.use("/wishList", whishListRouter);
 app.use("/profile", profileRouter);
 app.use("/orders", orderRouter);
+
 // Sync models with the database
 syncModels()
   .then(() => {
