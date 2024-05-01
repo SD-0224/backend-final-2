@@ -20,12 +20,8 @@ import orderRouter from "./Routers/orderRouter";
 import profileRouter from "./Routers/profileRouter";
 import pino from "pino";
 import { config } from "./config/pino";
-import { StripePaymentProcessor } from "./Payment/StripePaymentProcessor";
-const { collectDefaultMetrics, register } = require("prom-client");
 const app = express();
 const PORT = 3000;
-const stripKey=process.env.Stripe_API_Key;
-const stripeProcessor = new StripePaymentProcessor();
 const logger = pino({
   level: config.level || "info",
   formatters: {
@@ -36,19 +32,6 @@ const logger = pino({
   timestamp: pino.stdTimeFunctions.isoTime,
 });
 logger.info("Application started");
-collectDefaultMetrics();
-app.get("/metrics", async function (req, res) {
-  res.set("Content-Type", register.contentType);
-  try {
-      const metrics = await register.metrics();
-      res.end(metrics);
-  } catch (error) {
-      console.error("Error getting metrics:", error);
-      res.status(500).send("Error getting metrics");
-  }
-});
-
-const test = db.address;
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -67,9 +50,6 @@ app.use(
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-// const viewPath=path.join(__dirname,"../views")
-// app.set('view engine', "ejs");
-// app.set('views', path.join(__dirname, ''));
 app.use(passport.initialize());
 app.use(
   session({
@@ -78,18 +58,13 @@ app.use(
     saveUninitialized: false,
   })
 );
-const cookieParser = require("cookie-parser");
+import cookieParser from "cookie-parser";
 app.use(cookieParser());
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../src/views"));
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
-// Sign up route for authRouter
-authRouter.get("/", (req, res) => {
-  res.render("signUp");
-});
-// Define routes or other middleware here
 app.use("/products", productRouter);
 app.use("/brands", brandRouter);
 app.use("/categories", categoryRouter);
@@ -102,7 +77,7 @@ app.use("/orders", orderRouter);
 syncModels()
   .then(() => {
     console.log("Database synced successfully");
-    app.listen(PORT, process.env.HOST || 'localhost', () => {
+    app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })
