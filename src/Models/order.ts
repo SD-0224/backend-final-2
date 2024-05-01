@@ -10,7 +10,7 @@ interface orderAttributes extends Model {
   phoneNumber: string;
   addressID: number;
   grandTotal: number;
-  isPaid: boolean;
+  status: string;
 }
 
 const order = sequelize.define<orderAttributes>('orderDetails', {
@@ -47,8 +47,8 @@ const order = sequelize.define<orderAttributes>('orderDetails', {
     type: DataTypes.FLOAT,
     allowNull: false
   },
-  isPaid: {
-    type: DataTypes.BOOLEAN,
+  status: {
+    type: DataTypes.STRING,
     allowNull: false,
   },
 }, {

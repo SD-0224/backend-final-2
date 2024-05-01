@@ -13,6 +13,7 @@ import { logger } from "../config/pino";
 const jwt = require("jsonwebtoken");
 //Generate fake secret key
 const secretKey = generateFakeSecretKey();
+const profileImage = "https://static-00.iconduck.com/assets.00/profile-default-icon-2048x2045-u3j7s5nj.png";
 
 export const registerNewUser = async (userData: any) => {
   const { email, password, googleId, phoneNumber, lastName, firstName } =
@@ -68,6 +69,7 @@ export const registerNewUser = async (userData: any) => {
       firstName: firstName,
       lastName: lastName,
       phoneNumber: phoneNumber,
+      image: profileImage,
       googleId: googleId || null,
     });
     const { password: _, ...UserInfo } = newUser.toJSON();

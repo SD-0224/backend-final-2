@@ -310,20 +310,17 @@ export const cartController = {
       if (!cart) {
         try {
           cart = await Cart.create({ userID: userID });
-
           logger.info(`Cart created successfully`);
         } catch (error) {
           logger.error("Error creating cart for the user");
           return res.status(500).json({ error: "Error creating cart" });
         }
-        const addedItems = await cartServices.syncCart(cart.cartID, cartItems);
-        return res.status(200).json({
-          message: "Added items successfully with new cart",
-          addedItems: addedItems,
-        });
       }
-
-      return res.status(200).json({ message: "User already has a cart" });
+      const addedItems = await cartServices.syncCart(cart.cartID, cartItems);
+      return res.status(200).json({
+        message: "Added items successfully with new cart",
+        addedItems: addedItems,
+      });
     } catch (error) {
       console.log(error);
       logger.error("Internal server Error", error);

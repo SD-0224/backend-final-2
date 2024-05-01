@@ -1,8 +1,9 @@
 import { body, param, query, ValidationChain } from "express-validator";
 
 export const uploadImageValidator: ValidationChain[] = [
-  body("image").custom((value, { req }) => {
-    if (!value || !req.file) {
+  body("file").custom((value, { req }) => {
+    console.log(req.file)
+    if (!req.file) {
       throw new Error("Image is required");
     }
     const allowedExtensions = [

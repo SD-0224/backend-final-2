@@ -26,12 +26,7 @@ export const createOrder = async (
     }
     const { firstName, lastName, email, phoneNumber } = req.body;
     const { street, state, city, postalCode } = req.body;
-    let token = req.cookies.token;
-    if (!token) {
-      logger.error("Token not found in cookies");
-      return res.status(401).json({ error: "Unauthorized: Token not found" });
-    }
-    const { userID } = req;
+    const userID  = req.userID;
     if (!userID) {
       logger.error("Unauthorized: User can't create the order ");
       return res
@@ -87,7 +82,6 @@ export const createOrder = async (
         grandTotal += element.subTotal;
       })
     );
-    let isPaid = false;
 //Choose the option of the product's payment method
 let paymentToken;
 switch(paymentMethod){
@@ -127,6 +121,7 @@ default:
   return res.status(400).json({error:"Invalid payment token to order"})
 }
 
+    let status = "pending";
     const newOrder = await orderServices.createOrder(
       {
         userID,
@@ -136,7 +131,7 @@ default:
         phoneNumber,
         addressID,
         grandTotal,
-        isPaid,
+        status,
       },
       transaction
     );

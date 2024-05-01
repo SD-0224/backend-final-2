@@ -4,6 +4,7 @@ import { User } from "../Models/user";
 import { Request, Response } from "express";
 import { whitelist } from "validator";
 import { logger } from "../config/pino";
+import { sequelize } from "../config/dbConfig";
 export const whishListController = {
   toggleWhishListProducts: async (
     req: Request & { userID: Number },
@@ -50,16 +51,26 @@ export const whishListController = {
       const userID = req.userID;
       logger.info(`Get the list of favorites items for the user ${userID}`);
       const userWishList = await wishList.findAll({
+        attributes: [
+          "productID",
+          "userID",
+          [
+            sequelize.literal(
+              "(SELECT imgPath FROM images WHERE images.productID = wishList.productID AND images.imageIndex = 1)"
+            ),
+            "imgPath",
+          ],
+        ],
         where: { userID: userID },
         include: [{ model: Product, as: "product" }],
       });
       logger.info("Whish list of items returned successfully");
       res.status(200).json({
-        message: "Whish list of items returned successfully",
         userWishList,
       });
     } catch (error) {
       logger.error("Internal service error", error);
+      console.log(error)
       res.status(500).json({ error: "Internal service error" });
     }
   },
