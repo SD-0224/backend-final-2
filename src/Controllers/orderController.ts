@@ -7,6 +7,11 @@ import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
+
+import Stripe from 'stripe';
+const stripe = new Stripe(process.env.Stripe_API_Key, {
+  apiVersion: '2024-04-10', // Ensure the API version is up to date
+});
 export const createOrder = async (
   req: Request & { userID: Number },
   res: Response
@@ -21,6 +26,8 @@ export const createOrder = async (
     }
     const { firstName, lastName, email, phoneNumber } = req.body;
     const { street, state, city, postalCode } = req.body;
+    const paymentMethod = req.body.paymentMethod;
+
     const userID  = req.userID;
     if (!userID) {
       logger.error("Unauthorized: User can't create the order ");
@@ -77,7 +84,28 @@ export const createOrder = async (
         grandTotal += element.subTotal;
       })
     );
+    const amount = grandTotal * 100; // Convert grand total to cents (Stripe requires amounts in smallest currency unit)
+    const token = req.body.visaToken;
+      const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: 'usd',
+      payment_method: token,
+      confirm: true,
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'never'
+      }
+    });
     let status = "pending";
+    const paymentSuccess = db.payment.create({
+      userID: userID, 
+      paymentAmount: grandTotal,
+      paymentMethod: paymentMethod
+    });
+    if (paymentIntent.status !== 'succeeded')
+    {
+      return res.status(400).json({error:"Invalid payment"})
+    }
     const newOrder = await orderServices.createOrder(
       {
         userID,
@@ -121,6 +149,6 @@ export const createOrder = async (
   } catch (error) {
     await transaction.rollback();
     logger.error("Error creating order", error);
-    return res.status(error.status).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };
