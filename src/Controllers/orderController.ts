@@ -96,7 +96,6 @@ export const createOrder = async (
     );
     const amount = grandTotal * 100; // Convert grand total to cents (Stripe requires amounts in smallest currency unit)
     const token = req.body.visaToken as string;
-    await payWithVisaCard(amount, token);
     let status = "pending";
     const newOrder = await orderServices.createOrder(
       {
