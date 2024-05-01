@@ -7,17 +7,20 @@ import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
-
 import Stripe from 'stripe';
 const stripe = new Stripe(process.env.Stripe_API_Key, {
   apiVersion: '2024-04-10', // Ensure the API version is up to date
 });
+
+
 export const createOrder = async (
   req: Request & { userID: Number },
   res: Response
 ) => {
   const transaction = await sequelize.transaction();
-  try {
+  //Define the payment method for the order
+  const paymentMethod = req.body.paymentMethod;
+    try {
     // Validate the inputs
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

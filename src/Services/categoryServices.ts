@@ -1,6 +1,4 @@
-import { options } from "joi";
 import * as db from "../Models/index";
-import { sequelize } from "../config/dbConfig";
 
 
 const getAllCategories = async () =>

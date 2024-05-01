@@ -5,11 +5,11 @@ import { registerNewUser } from "../Controllers/userController";
 import { logger } from "../config/pino";
 import dotenv from "dotenv";
 dotenv.config();
-passport.serializeUser((user, done) => {
+passport.serializeUser((user: any, done) => {
   logger.info("Use serialization ");
   done(null, user.dataValues.userID);
 });
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (id: number, done) => {
   try {
     logger.info(`Deserializing user  Done`);
     const user = await User.findByPk(id);

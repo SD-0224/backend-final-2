@@ -1,7 +1,5 @@
-import { options } from "joi";
 import * as db from "../Models/index";
-import { sequelize } from "../config/dbConfig";
-import { ReviewAttributes } from "../Models/review";
+
 
 interface QueryOptions {
     where?: any;

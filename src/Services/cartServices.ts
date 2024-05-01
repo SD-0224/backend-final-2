@@ -1,9 +1,7 @@
-import { options } from "joi";
 import * as db from "../Models/index";
 import { sequelize } from "../config/dbConfig";
 import { productAttributes } from "../Models/product";
 import { logger } from "../config/pino";
-import { cartItemAttributes } from "../Models/cartItem";
 
 const getCartByUserId = async (userId: number): Promise<any> => {
   try {
