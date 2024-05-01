@@ -1,7 +1,6 @@
 import express from "express";
 import { syncModels } from "./config/dbConfig";
 import bodyParser from "body-parser";
-import * as db from "./Models/index";
 import { userRouter } from "./Routers/userRouter";
 import { authRouter } from "./Routers/authRouter";
 import { whishListRouter } from "./Routers/whishlistRouter";
@@ -20,7 +19,7 @@ import orderRouter from "./Routers/orderRouter";
 import profileRouter from "./Routers/profileRouter";
 import pino from "pino";
 import { config } from "./config/pino";
-const { collectDefaultMetrics, register } = require("prom-client");
+import { collectDefaultMetrics, register } from "prom-client";
 
 const app = express();
 const PORT = 3000;
