@@ -23,7 +23,7 @@ import { config } from "./config/pino";
 import { StripePaymentProcessor } from "./Payment/StripePaymentProcessor";
 const { collectDefaultMetrics, register } = require("prom-client");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const stripKey=process.env.Stripe_API_Key;
 const stripeProcessor = new StripePaymentProcessor();
 const logger = pino({
