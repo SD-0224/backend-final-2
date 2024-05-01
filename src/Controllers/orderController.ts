@@ -26,7 +26,6 @@ export const createOrder = async (
     }
     const { firstName, lastName, email, phoneNumber } = req.body;
     const { street, state, city, postalCode } = req.body;
-    const token = req.body.visaToken;
 
     const userID = req.userID;
     if (!userID) {
@@ -85,7 +84,13 @@ export const createOrder = async (
       })
     );
     const amount = grandTotal * 100; // Convert grand total to cents (Stripe requires amounts in smallest currency unit)
-
+    const token = req.body.visaToken as string;
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount,
+      currency: "usd",
+      payment_method: token,
+      confirm: true,
+    });
     let status = "pending";
     const newOrder = await orderServices.createOrder(
       {
