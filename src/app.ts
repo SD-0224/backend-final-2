@@ -46,7 +46,6 @@ app.use(
     credentials: true, // if you need to include credentials in requests
   })
 );
-
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -58,13 +57,14 @@ app.use(
     saveUninitialized: false,
   })
 );
-import cookieParser from "cookie-parser";
+const cookieParser = require("cookie-parser");
 app.use(cookieParser());
-
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "../src/views"));
 app.use("/user", userRouter);
 app.use("/auth", authRouter);
+
+// Define routes or other middleware here
 app.use("/products", productRouter);
 app.use("/brands", brandRouter);
 app.use("/categories", categoryRouter);
@@ -77,7 +77,7 @@ app.use("/orders", orderRouter);
 syncModels()
   .then(() => {
     console.log("Database synced successfully");
-    app.listen(PORT, '0.0.0.0', () => {
+    app.listen(PORT, process.env.HOST || 'localhost', () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })
