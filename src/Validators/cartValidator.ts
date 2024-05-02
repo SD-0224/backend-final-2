@@ -1,4 +1,4 @@
-import { body, param, query, ValidationChain } from "express-validator";
+import { body, param, ValidationChain } from "express-validator";
 
 export const validateProductInfo: ValidationChain[] = [
   param("productID").isNumeric().withMessage("Product ID must be an integer"),

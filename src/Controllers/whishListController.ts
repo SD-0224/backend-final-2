@@ -1,8 +1,6 @@
 import { wishList } from "../Models/wishlist";
 import { Product } from "../Models/product";
-import { User } from "../Models/user";
 import { Request, Response } from "express";
-import { whitelist } from "validator";
 import { logger } from "../config/pino";
 import { sequelize } from "../config/dbConfig";
 export const whishListController = {

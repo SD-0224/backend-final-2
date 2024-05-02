@@ -1,4 +1,4 @@
-import { body, param, query, ValidationChain } from "express-validator";
+import { body, ValidationChain } from "express-validator";
 
 export const uploadImageValidator: ValidationChain[] = [
   body("file").custom((value, { req }) => {

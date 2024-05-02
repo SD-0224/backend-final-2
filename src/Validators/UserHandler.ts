@@ -1,5 +1,5 @@
 // const { validator } = require("sequelize/types/utils/validator-extras");
-import validator, { trim } from "validator";
+import validator from "validator";
 
 //Validate an Email format
 export const validateEmail = (email: string) => {
