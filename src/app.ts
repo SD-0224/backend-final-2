@@ -10,8 +10,6 @@ import path from "path";
 import dotenv from "dotenv";
 dotenv.config();
 import Stripe from 'stripe';
-
-const stripe = new Stripe('sk_test_51PB0qOExyylvHUrWhr4L7NceK9WSr8C8SAMhSu2Jqe6k6cepaxOxzL5dX4S7BttxBB9OgRIH75NfXZL7sFjV2g2u00ozoHfF1V');
 // import { seedTables } from "./Utils/generateFake";
 import cors from "cors";
 import productRouter from "./Routers/productRouter";
