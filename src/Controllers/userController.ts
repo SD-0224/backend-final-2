@@ -1,5 +1,5 @@
 import { User } from "../Models/user";
-import bcrypt, { genSaltSync } from "bcrypt";
+import bcrypt, { genSaltSync } from "bcryptjs";
 import generateFakeSecretKey from "../Utils/helper";
 import {
   validateEmail,
