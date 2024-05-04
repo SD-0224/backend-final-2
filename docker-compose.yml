@@ -1,0 +1,42 @@
+version: '2.4'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    environment:
+      NODE_ENV: 'development'
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DIALECT: ${DB_DIALECT}
+      sessionSecret: ${sessionSecret}
+      clientSecretAuth: ${clientSecretAuth}
+      clientIDAuth: ${clientIDAuth}
+      Cloud_Name: ${Cloud_Name}
+      Cloud_Key: ${Cloud_Key}
+      API_Secret: ${API_Secret}
+      Stripe_API_Key: ${Stripe_API_Key}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+    depends_on:
+      - mysql
+    volumes:
+      - .:/src/app
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} 
+    ports:
+      - '3308:3308'
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+    driver: local
