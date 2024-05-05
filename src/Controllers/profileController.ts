@@ -1,7 +1,7 @@
 import * as db from "../Models/index";
 import { Request, Response } from "express";
 import { logger } from "../config/pino";
-import bcrypt, { genSaltSync } from "bcrypt";
+import bcrypt, { genSaltSync } from "bcryptjs";
 import dotenv from "dotenv";
 dotenv.config();
 import { v2 as cloudinary } from "cloudinary";

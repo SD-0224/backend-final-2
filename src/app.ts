@@ -33,6 +33,18 @@ const logger = pino({
   timestamp: pino.stdTimeFunctions.isoTime,
 });
 logger.info("Application started");
+collectDefaultMetrics();
+app.get("/metrics", async function (req, res) {
+  res.set("Content-Type", register.contentType);
+  try {
+      const metrics = await register.metrics();
+      res.end(metrics);
+  } catch (error) {
+      console.error("Error getting metrics:", error);
+      res.status(500).send("Error getting metrics");
+  }
+});
+
 
 app.use(
   cors({
