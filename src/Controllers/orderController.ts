@@ -7,7 +7,7 @@ import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
-// import StripeSingleton from "../Utils/processPayment";
+import StripeSingleton from "../Utils/processPayment";
 export const createOrder = async (
   req: Request & { userID: Number },
   res: Response
@@ -82,7 +82,9 @@ export const createOrder = async (
       })
     );
     const amount = Math.round(grandTotal * 100); // Convert grand total to cents (Stripe requires amounts in smallest currency unit)
+
     const token = req.body.visaToken as string;
+    let paymentOutput = StripeSingleton.payWithVisaCard(amount, token);
     let status = "pending";
     const newOrder = await orderServices.createOrder(
       {
