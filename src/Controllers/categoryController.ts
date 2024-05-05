@@ -1,5 +1,4 @@
-import * as db from "../Models/index";
-import { sequelize } from "../config/dbConfig";
+
 import { Request, Response } from "express";
 import { logger } from "../config/pino";
 import categoryServices from "../Services/categoryServices";

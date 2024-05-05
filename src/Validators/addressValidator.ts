@@ -1,4 +1,4 @@
-import { body, param, query, ValidationChain } from "express-validator";
+import { body, ValidationChain } from "express-validator";
 
 export const validateAddress: ValidationChain[] = [
   body("street").notEmpty().withMessage("Street address is required"),

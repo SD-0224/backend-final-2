@@ -1,12 +1,8 @@
 import { CartItem } from "../Models/cartItem";
 import { Cart } from "../Models/cart";
 import * as db from "../Models/index";
-import { sequelize } from "../config/dbConfig";
 import { Request, Response } from "express";
-import { Product } from "../Models/product";
 import { logger } from "../config/pino";
-
-import jwt from "jsonwebtoken";
 import { validationResult } from "express-validator";
 import cartServices from "../Services/cartServices";
 //Get cart by userId and create a new cart objet

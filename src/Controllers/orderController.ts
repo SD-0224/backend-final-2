@@ -7,11 +7,14 @@ import productServices from "../Services/productServices";
 import addressServices from "../Services/addressServices";
 import { validationResult } from "express-validator";
 import { logger } from "../config/pino";
+import StripeSingleton from "../Utils/processPayment";
 export const createOrder = async (
   req: Request & { userID: Number },
   res: Response
 ) => {
   const transaction = await sequelize.transaction();
+  //Define the payment method for the order
+  const paymentMethod = req.body.paymentMethod;
   try {
     // Validate the inputs
     const errors = validationResult(req);
@@ -21,7 +24,8 @@ export const createOrder = async (
     }
     const { firstName, lastName, email, phoneNumber } = req.body;
     const { street, state, city, postalCode } = req.body;
-    const userID  = req.userID;
+
+    const userID = req.userID;
     if (!userID) {
       logger.error("Unauthorized: User can't create the order ");
       return res
@@ -77,6 +81,10 @@ export const createOrder = async (
         grandTotal += element.subTotal;
       })
     );
+    const amount = Math.round(grandTotal * 100); // Convert grand total to cents (Stripe requires amounts in smallest currency unit)
+
+    const token = req.body.visaToken as string;
+    let paymentOutput = StripeSingleton.payWithVisaCard(amount, token);
     let status = "pending";
     const newOrder = await orderServices.createOrder(
       {
@@ -121,6 +129,6 @@ export const createOrder = async (
   } catch (error) {
     await transaction.rollback();
     logger.error("Error creating order", error);
-    return res.status(error.status).json({ error: error.message });
+    return res.status(500).json({ error: error.message });
   }
 };

@@ -1,4 +1,4 @@
-import { body, param, query, ValidationChain } from "express-validator";
+import { body,ValidationChain } from "express-validator";
 
 export const validatePersonalInfo: ValidationChain[] = [
   body("firstName").notEmpty().withMessage("First name is required"),

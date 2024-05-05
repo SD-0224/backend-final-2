@@ -1,5 +1,4 @@
 import * as db from "../Models/index";
-import { sequelize } from "../config/dbConfig";
 import { Request, Response } from "express";
 import { logger } from "../config/pino";
 import bcrypt, { genSaltSync } from "bcryptjs";
@@ -10,6 +9,7 @@ import {
   validateEmail,
   validateFirstName,
   validateLastName,
+  validatePassword,
   validatePhoneNumber,
 } from "../Validators/UserHandler";
 import { validationResult } from "express-validator";
@@ -72,6 +72,8 @@ export const changePassword = async (
     const current = req.body.currentPassword;
     const newPassword = req.body.newPassword;
     const userID = req.userID;
+      const errors = [];
+
 
     const user = await db.User.findByPk(Number(userID));
     if (!user) {
@@ -81,8 +83,18 @@ export const changePassword = async (
     const isPasswordCorrect = await bcrypt.compare(current, user.password);
     if (!isPasswordCorrect) {
       logger.error("Wrong password!");
-      return res.status(400).json({ error: "Wrong password!" });
+      errors.push("Incorrect password");
     }
+    if (!validatePassword(newPassword)) {
+      logger.error("Invalid new password it should contain at least one uppercase-lowercase letter  and number ");
+      errors.push("Invalid password it should contain at least one uppercase-lowercase letter  and number");
+
+    }
+    if (errors.length > 0)
+      {
+        logger.error("Update failed:", errors.join(", "));
+        return res.status(400).json({ errors });
+      }
     const salt = genSaltSync(10);
     const hash = bcrypt.hashSync(newPassword, salt);
     user.password = hash;
@@ -175,7 +187,7 @@ export const updateDetails = async (
 ) => {
   try {
     const userID = req.userID;
-    const { firstName, lastName, phoneNumber, email, dateofBirth } = req.body;
+    const { firstName, lastName, phoneNumber, email, dateOfBirth } = req.body;
     const errors = [];
     if (!email || email.trim() === "") {
       logger.error("Email is required");
@@ -199,9 +211,9 @@ export const updateDetails = async (
       errors.push("Invalid phone Number");
     }
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
+console.log(dateOfBirth)
   // Check if the input matches the expected format
-  if (!dateRegex.test(dateofBirth)) {
+  if (!dateRegex.test(dateOfBirth)) {
     errors.push("Invalid Date");
   }
 
@@ -222,7 +234,7 @@ export const updateDetails = async (
     user.lastName = lastName;
     user.phoneNumber = phoneNumber;
     user.email = email;
-    user.dateOfBirth = dateofBirth;
+    user.dateOfBirth = dateOfBirth;
     await user.save();
     logger.info("User profile updated successfully");
     res
@@ -238,7 +250,6 @@ export const createAddress = async (
   req: Request & { userID: Number },
   res: Response
 ) => {
-  const transaction = await sequelize.transaction();
   try {
     // Validate the inputs
     const errors = validationResult(req);
@@ -271,12 +282,10 @@ export const createAddress = async (
           city,
           postalCode,
         },
-        transaction
       );
     }
     return res.status(200).json({message: "Successful address creation"});
   } catch (error) {
-    await transaction.rollback();
     logger.error("Error creating address", error);
     return res.status(error.status).json({ error: error.message });
   }

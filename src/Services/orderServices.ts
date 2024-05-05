@@ -1,5 +1,4 @@
 import * as db from "../Models/index";
-import { sequelize } from "../config/dbConfig";
 
 
 export const createOrder = async function createOrder(orderData: any, transaction?: any): Promise<any> {
