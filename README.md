@@ -51,6 +51,6 @@ Run the application
 `npm run dev
 `
 
-## [API Documentation
-]([url](https://documenter.getpostman.com/view/33968858/2sA3BkdtGN#0526bc1b-b1c9-4103-8125-9111abdc20c8))
+## API Documentation
+https://documenter.getpostman.com/view/33968858/2sA3BkdtGN#0526bc1b-b1c9-4103-8125-9111abdc20c8
 
