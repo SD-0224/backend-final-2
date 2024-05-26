@@ -1,8 +1,8 @@
-E-Commerce Website
-Project Overview
+# E-Commerce Website
+## Project Overview
 This project is a comprehensive e-commerce website developed as part of the Talent Acceleration Platform (TAP) final project. The website leverages modern web technologies including TypeScript and Node.js, showcasing both backend and frontend capabilities. The project was developed by a team of six members using Agile methodologies.
 
-Features
+## Features
 User Authentication and Authorization
 Product Listing and Details
 Shopping Cart and Checkout Process
@@ -20,39 +20,37 @@ Prerequisites
 Node.js (version 14.x or higher)
 MongoDB (local or cloud instance)
 Stripe Account for Payment Gateway
-Installation
-Clone the repository
+## Installation
+1. Clone the repository
+`git clone https://github.com/SD-0224/backend-final-2.git
+cd backend-final-2`
 
+2. Install dependencies
 bash
-Copy code
-git clone https://github.com/SD-0224/backend-final-2.git
-cd backend-final-2
-Install dependencies
-
-bash
-Copy code
-npm install
-Set up environment variables
+`npm install
+`
+3. Set up environment variables
 
 Create a .env file in the root directory and add the following variables:
-
-makefile
-Copy code
-MONGO_URI=<your_mongodb_connection_string>
-JWT_SECRET=<your_jwt_secret>
-STRIPE_SECRET_KEY=<your_stripe_secret_key>
+`DB_HOST=your-database-host
+DB_PORT=3306
+DB_DATABASE=your-database-name
+DB_USERNAME=your-database-username
+DB_PASSWORD=your-database-password
+DB_DIALECT=mysql
+sessionSecret="your-session-secret"
+clientSecretAuth="your-client-secret-auth"
+clientIDAuth="your-client-id-auth"
+Cloud_Name=your-cloud-name
+Cloud_Key=your-cloud-key
+API_Secret=your-api-secret
+Stripe_API_Key=your-stripe-api-key
+STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
+`
 Run the application
+`npm run dev
+`
 
-bash
-Copy code
-npm run dev
-This will start both the backend and frontend servers concurrently.
+## [API Documentation
+]([url](https://documenter.getpostman.com/view/33968858/2sA3BkdtGN#0526bc1b-b1c9-4103-8125-9111abdc20c8))
 
-API Documentation
-https://documenter.getpostman.com/view/33968858/2sA3BkdtGN#0526bc1b-b1c9-4103-8125-9111abdc20c8
-
-Fork the repository
-Create a new branch (git checkout -b feature-branch)
-Commit your changes (git commit -m 'Add some feature')
-Push to the branch (git push origin feature-branch)
-Create a new Pull Request
