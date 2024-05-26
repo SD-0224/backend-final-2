@@ -8,17 +8,16 @@ Product Listing and Details
 Shopping Cart and Checkout Process
 Payment Gateway Integration
 Order Management for Users
-Admin Dashboard for Managing Products, Orders, and Users
 Technologies Used
 Backend: Node.js, Express, TypeScript
 Frontend: React, TypeScript
-Database: MongoDB
+Database: MySQL
 Payment Gateway: Stripe
 Authentication: JWT (JSON Web Tokens)
 Project Setup
 Prerequisites
 Node.js (version 14.x or higher)
-MongoDB (local or cloud instance)
+MySQL (local or cloud instance)
 Stripe Account for Payment Gateway
 ## Installation
 1. Clone the repository
