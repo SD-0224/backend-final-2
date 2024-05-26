@@ -32,7 +32,8 @@ bash
 3. Set up environment variables
 
 Create a .env file in the root directory and add the following variables:
-`DB_HOST=your-database-host
+```
+DB_HOST=your-database-host
 DB_PORT=3306
 DB_DATABASE=your-database-name
 DB_USERNAME=your-database-username
@@ -46,7 +47,8 @@ Cloud_Key=your-cloud-key
 API_Secret=your-api-secret
 Stripe_API_Key=your-stripe-api-key
 STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
-`
+```
+
 Run the application
 `npm run dev
 `
